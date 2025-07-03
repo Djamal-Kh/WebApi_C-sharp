@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZooApi", "ZooApi\ZooApi.csproj", "{AE80531C-99A0-4461-83FE-76A73B3D17FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryAnimals", "LibraryAnimals\LibraryAnimals.csproj", "{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE80531C-99A0-4461-83FE-76A73B3D17FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE80531C-99A0-4461-83FE-76A73B3D17FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE80531C-99A0-4461-83FE-76A73B3D17FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE80531C-99A0-4461-83FE-76A73B3D17FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {71D0724F-1644-410F-B6F8-33B4A8A3353E}
+	EndGlobalSection
+EndGlobal
