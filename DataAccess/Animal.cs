@@ -38,6 +38,7 @@ namespace DataAccess
 
     public class Lion : Animal
     {
+        public Lion() : base() { }
         public Lion(string name) : base(AnimalType.Lion,name) {}
 
         public override string MakeSound()
@@ -52,6 +53,7 @@ namespace DataAccess
             }
             else
             {
+                Energy += 50;
                 return MakeSound();
             }
         }
@@ -59,6 +61,7 @@ namespace DataAccess
 
     public class Monkey : Animal
     {
+        public Monkey() : base() { }
         public Monkey(string name) : base(AnimalType.Monkey,name) {}
         public override string MakeSound()
         {
@@ -72,7 +75,8 @@ namespace DataAccess
                 return "Обезьяна наелась";
             }
             else
-            {               
+            {
+                Energy += 50;
                 return MakeSound();
             }
         }

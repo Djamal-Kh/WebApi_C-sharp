@@ -6,25 +6,25 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Db_v2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Animals",
+                name: "AnimalsOfZoo",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Type = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Energy = table.Column<int>(type: "integer", nullable: false),
+                    EnergyOfAnimal = table.Column<int>(type: "integer", nullable: false),
                     AnimalType = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Animals", x => x.Id);
+                    table.PrimaryKey("PK_AnimalsOfZoo", x => x.Id);
                 });
         }
 
@@ -32,7 +32,7 @@ namespace DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Animals");
+                name: "AnimalsOfZoo");
         }
     }
 }

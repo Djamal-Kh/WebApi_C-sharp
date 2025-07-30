@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -9,17 +10,40 @@ using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace DataAccess
 {
-    public class AppContextDB(DbContextOptions<AppContextDB> options) : DbContext(options)
+    public class AppContextDB : DbContext
     {
+        public AppContextDB(DbContextOptions<AppContextDB> options) : base(options) { }
         public DbSet<Animal> Animals { get; set; }
+        public DbSet<Lion> Lions { get; set; }
+        public DbSet<Monkey> Monkeys { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Animal>()
+            modelBuilder
+                .Entity<Animal>()
+                .ToTable("AnimalsOfZoo")
                 .HasDiscriminator<string>("AnimalType")
                 .HasValue<Lion>("Lion")
                 .HasValue<Monkey>("Monkey");
+            
+            modelBuilder
+                .Entity<Animal>()
+                .HasKey(X => X.Id);
 
-            base.OnModelCreating(modelBuilder);
+            modelBuilder
+                .Entity<Animal>()
+                .Property(x => x.Name)
+                .HasColumnName("Name");
+
+            modelBuilder
+                .Entity<Animal>()
+                .Property(x => x.Energy)
+                .HasColumnName("EnergyOfAnimal");
+
+            modelBuilder.Entity<Animal>()
+                .Property(x => x.Type)
+                .HasConversion<string>();
         }
     }
 }

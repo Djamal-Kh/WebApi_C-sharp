@@ -27,8 +27,15 @@ namespace ZooApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAnimals()
         {
-            var result = await animalService.GetAllAnimalsAsync();
-            return Ok(result);
+            try
+            {
+                var result = await animalService.GetAllAnimalsAsync();
+                return Ok(result);
+            }
+
+            catch { return BadRequest(new { Message = "There are no animals in the zoo" }); }
+            
+
         }
 
 
@@ -53,10 +60,8 @@ namespace ZooApi.Controllers
                 var result = await animalService.FeedAnimalAsync(id);
                 return Ok(result);
             }
-            catch
-            {
-                return BadRequest(new { Message = "Incorrect Data !" });
-            }
+
+            catch { return NotFound(new { Message = "Animal Not Found" }); }
         }
 
 
@@ -66,12 +71,10 @@ namespace ZooApi.Controllers
             try
             {
                 var result = await animalService.DeleteAnimalAsync(id);
-                return NoContent();
+                return Ok(result);
             }
-            catch
-            {
-                return NotFound(new { Message = "Not Found animal" });
-            }
+
+            catch { return NotFound(new { Message = "Animal Not Found" }); }
         }
     }
 }

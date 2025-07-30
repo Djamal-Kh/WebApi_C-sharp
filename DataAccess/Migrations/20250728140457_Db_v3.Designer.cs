@@ -11,15 +11,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppContextDB))]
-    [Migration("20250702122451_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20250728140457_Db_v3")]
+    partial class Db_v3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -38,18 +38,21 @@ namespace DataAccess.Migrations
                         .HasColumnType("character varying(8)");
 
                     b.Property<int>("Energy")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("EnergyOfAnimal");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("Name");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Animals");
+                    b.ToTable("AnimalsOfZoo", (string)null);
 
                     b.HasDiscriminator<string>("AnimalType").HasValue("Animal");
 
