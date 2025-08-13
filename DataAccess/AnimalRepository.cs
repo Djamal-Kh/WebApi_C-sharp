@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -18,9 +19,9 @@ namespace DataAccess
 
         public async Task<List<Animal>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
         {
-            var result = await context.Animals.ToListAsync();
+            var result = await context.Animals.OrderBy(a => a.Id).ToListAsync();
             if (result.Count == 0)
-                throw new Exception("Animals Not Found");
+                throw new SqlNullValueException();
 
             return result;
         }
@@ -29,8 +30,7 @@ namespace DataAccess
         { 
             var result = await context.Animals.FindAsync(id);
             if (result == null)
-                throw new Exception("Animal Not found");
-
+                throw new KeyNotFoundException();
             return result;
         }
         
@@ -39,7 +39,7 @@ namespace DataAccess
             var TargetAnimal = await context.Animals.FindAsync(id);
             if (TargetAnimal == null)
             {
-                throw new Exception("Animal Not found");
+                throw new KeyNotFoundException();
             }
             var result = TargetAnimal.Eat();
             await context.SaveChangesAsync(); // Для того, чтобы в БД сохранить изменившуюся энергию у животного, которого накормили

@@ -13,22 +13,22 @@ namespace LibraryAnimals
 
     public class AnimalService(IAnimalRepository animalRepository) : IAnimalService
     {
-        public async Task<Animal> CreateAnimalAsync(string TypeOfAnimal, string NameOfAnimal, CancellationToken cancellationToken = default)
+        public async Task<Animal> CreateAnimalAsync(AnimalType animalType, string NameOfAnimal, CancellationToken cancellationToken = default)
         {
             Animal newAnimal;
 
-            if (TypeOfAnimal == "Lion")
+            if (animalType == AnimalType.Lion)
             {
                 newAnimal = new Lion(NameOfAnimal);
                 await animalRepository.CreateAnimalAsync(newAnimal);
             }
-            else if (TypeOfAnimal == "Monkey")
+            else if (animalType == AnimalType.Monkey)
             {
                 newAnimal = new Monkey(NameOfAnimal);
                 await animalRepository.CreateAnimalAsync(newAnimal);
             }           
             else
-                throw new Exception("Type of Animal Not Found");
+                throw new ArgumentException();
 
             return newAnimal;
         }
@@ -47,16 +47,13 @@ namespace LibraryAnimals
 
         public async Task<string> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            await Functions.CheckOnNull<IAnimal>(animalRepository, id);
             var result = await animalRepository.FeedAnimalAsync(id);
             return result;
         }
 
         public async Task<string> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            await Functions.CheckOnNull<IAnimal>(animalRepository, id);
             var animal = await animalRepository.GetAnimalByIdAsync(id);
-
             await animalRepository.DeleteAnimalAsync(animal);
             string result = $"Животное с id = {id} было удалено";
             return result;

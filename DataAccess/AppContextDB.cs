@@ -41,9 +41,16 @@ namespace DataAccess
                 .Property(x => x.Energy)
                 .HasColumnName("EnergyOfAnimal");
 
-            modelBuilder.Entity<Animal>()
+            modelBuilder
+                .Entity<Animal>()
                 .Property(x => x.Type)
                 .HasConversion<string>();
+
+            modelBuilder
+                .Entity<Animal>()
+                .Property(x => x.SecretInformation)
+                .HasColumnName("SecretInformation")
+                .HasDefaultValueSql("gen_random_uuid()");
         }
     }
 }

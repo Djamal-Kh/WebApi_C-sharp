@@ -16,12 +16,15 @@ namespace DataAccess
 
     public abstract class Animal : IAnimal
     {
+        protected const int MaxEnergy = 100;
         [Key]
         public int Id { get; set; }
 
         public AnimalType Type { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Energy { get; set; } = 50;
+
+        public Guid SecretInformation { get; set; }
 
         public Animal(AnimalType type, string name)
         {
@@ -38,6 +41,7 @@ namespace DataAccess
 
     public class Lion : Animal
     {
+        private const int LionEnegryGain = 50;
         public Lion() : base() { }
         public Lion(string name) : base(AnimalType.Lion,name) {}
 
@@ -47,13 +51,13 @@ namespace DataAccess
         }
         public override string Eat()
         {
-            if (Energy >= 100)
+            if (Energy >= MaxEnergy)
             {
                 return "Лев наелся";
             }
             else
             {
-                Energy += 50;
+                Energy += LionEnegryGain;
                 return MakeSound();
             }
         }
@@ -70,7 +74,7 @@ namespace DataAccess
 
         public override string Eat()
         {
-            if (Energy >= 100)
+            if (Energy >= MaxEnergy)
             {
                 return "Обезьяна наелась";
             }

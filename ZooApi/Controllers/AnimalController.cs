@@ -1,80 +1,74 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LibraryAnimals;
+using AutoMapper;
+using ZooApi.DTO;
+using FluentValidation;
 
 namespace ZooApi.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
-    public class AnimalController(IAnimalService animalService) : ControllerBase
+    public class AnimalController : ControllerBase
     {
+        private readonly IAnimalService _animalService;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateAnimalDto> _createvAnimalValidator;
 
-        [HttpPost]
-        public async Task<IActionResult> CreateAnimal(string TypeOfAnimal, string NameOfAnimal)
+        public AnimalController(IAnimalService animalService, IMapper mapper, IValidator<CreateAnimalDto> createvAnimalValidator)   
         {
-            try
-            {
-                var result = await animalService.CreateAnimalAsync(TypeOfAnimal, NameOfAnimal);
-                return Ok(result);
-            }
-
-            catch (Exception)
-            { return BadRequest(new { Message = "The animal species field is filled in incorrectly" }); }
-
+            _animalService = animalService;
+            _mapper = mapper;
+            _createvAnimalValidator = createvAnimalValidator;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateAnimal([FromBody] CreateAnimalDto dto)
+        {
+            var validatorCreate = await _createvAnimalValidator.ValidateAsync(dto);
+            if (!validatorCreate.IsValid)
+            {
+                var errorsValidation = validatorCreate.Errors.Select(x => new {x.AttemptedValue, x.ErrorMessage });
+                return BadRequest(errorsValidation);
+            }
+
+            var animal = await _animalService.CreateAnimalAsync(dto.Type, dto.Name);
+            var result = _mapper.Map<AnimalDto>(animal);
+            return Ok(result);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAnimals()
         {
-            try
-            {
-                var result = await animalService.GetAllAnimalsAsync();
-                return Ok(result);
-            }
-
-            catch { return BadRequest(new { Message = "There are no animals in the zoo" }); }
-            
-
+            var animals = await _animalService.GetAllAnimalsAsync();
+            var result = _mapper.Map<List<AnimalDto>>(animals);
+            return Ok(result);
         }
 
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAnimalById([FromRoute] int id)
         {
-            try
-            {
-                var result = await animalService.GetAnimalByIdAsync(id);
-                    return Ok(result);
-            }
-
-            catch { return NotFound(new { Message = "Not Found Animal" }); }
+            var animal = await _animalService.GetAnimalByIdAsync(id);
+            var result = _mapper.Map<AnimalDto>(animal);
+            return Ok(result);
         }
 
 
         [HttpPut("{id}")]
         public async Task<IActionResult> FeedAnimal([FromRoute] int id)
         {
-            try
-            {
-                var result = await animalService.FeedAnimalAsync(id);
-                return Ok(result);
-            }
-
-            catch { return NotFound(new { Message = "Animal Not Found" }); }
+            var result = await _animalService.FeedAnimalAsync(id);
+            return Ok(result);
         }
 
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAnimal([FromRoute]int id)
+        public async Task<IActionResult> DeleteAnimal([FromRoute] int id)
         {
-            try
-            {
-                var result = await animalService.DeleteAnimalAsync(id);
-                return Ok(result);
-            }
-
-            catch { return NotFound(new { Message = "Animal Not Found" }); }
+            var result = await _animalService.DeleteAnimalAsync(id);
+            return Ok(result);
         }
+
     }
 }

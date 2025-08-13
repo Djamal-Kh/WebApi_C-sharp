@@ -1,8 +1,14 @@
-using LibraryAnimals;
 using DataAccess;
+using FluentValidation;
+using LibraryAnimals;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using ZooApi.DTO;
+using ZooApi.Mapping;
+using ZooApi.Middlewares;
+using ZooApi.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -12,12 +18,21 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
     });
+
+builder.Services.AddHttpLogging(options => {
+    options.LoggingFields = HttpLoggingFields.All;
+});
+
+//builder.WebHost.UseUrls("http://0.0.0.0:8080"); - для Docker. Также для запуска с Docker, необходимо в appsettings.json замеить localhost на postgre_db
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddLibraryAnimals();
+builder.Services.AddAutoMapper(typeof(AnimalProfile));
 
 builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
+builder.Services.AddScoped<IValidator<CreateAnimalDto>, CreateAnimalDtoValidator>();
 
 builder.Services.AddDbContext<AppContextDB>(
     options =>
@@ -26,20 +41,16 @@ builder.Services.AddDbContext<AppContextDB>(
     });
 
 var app = builder.Build();
-
+app.UseExceptionHandlingMiddleware();
 
 using var scope = app.Services.CreateScope();
 var db = scope.ServiceProvider.GetRequiredService<AppContextDB>();
 await db.Database.MigrateAsync();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseAuthorization();
+app.UseHttpLogging();
 app.MapControllers();
 app.Run();
