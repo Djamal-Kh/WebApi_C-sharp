@@ -25,8 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-    <ProjectReference Include="..\LibraryAnimals\LibraryAnimals.csproj" />
+    <ProjectReference Include="..\DataAccess\DomainAnimal.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\LibraryAnimals\ApplicationAnimal.csproj" />
   </ItemGroup>
 
 </Project>

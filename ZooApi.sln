@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZooApi", "ZooApi\ZooApi.csproj", "{AE80531C-99A0-4461-83FE-76A73B3D17FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiAnimal", "ZooApi\WebApiAnimal.csproj", "{AE80531C-99A0-4461-83FE-76A73B3D17FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryAnimals", "LibraryAnimals\LibraryAnimals.csproj", "{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationAnimal", "LibraryAnimals\ApplicationAnimal.csproj", "{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainAnimal", "DataAccess\DomainAnimal.csproj", "{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
