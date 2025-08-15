@@ -24,25 +24,27 @@ namespace ZooApi.Middlewares
 
             catch(ArgumentException ex)
             {
+                _logger.LogError("Создание животного провалено. Validation failed ! Invalid input data! Error: {Error}", ex);
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.BadRequest, "Invalid input data! The animal species field is filled in incorrectly");
             }
 
             catch(SqlNullValueException ex)
             {
+                _logger.LogError("Возврат всех животных пользователю провалено. Нет никаких животных в БД !");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.NotFound, "There are no animals in the zoo");
             }
 
             catch(KeyNotFoundException ex)
-            {
+            {   _logger.LogError($"Животное с таким Id не было найдено: {ex.Message}");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.NotFound, "Animal Not Found");
             }
 
             catch(Exception ex)
             {
+                _logger.LogCritical("Какая-то дыра/баг в приложении т.к. данное исключение не должно обрабатываться при нормальной работе !!!");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.InternalServerError, "Something strange happened");
             }
         }
-
 
 
         private async Task HandleExceptionAsync(HttpContext context, string exMessage, HttpStatusCode statusCode, string message )
@@ -62,6 +64,7 @@ namespace ZooApi.Middlewares
             await response.WriteAsJsonAsync(errorDto);
         }
     }
+
 
     public static class ExceptionHandlingMiddlewareExtensions
     {
