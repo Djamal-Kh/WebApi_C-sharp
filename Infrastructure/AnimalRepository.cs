@@ -1,21 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using DomainAnimal.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Data.SqlTypes;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+
 
 namespace DataAccess
 {
     public class AnimalRepository(AppContextDB context) : IAnimalRepository
     {
+        // REST
         public async Task CreateAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
         {
             await context.Animals.AddAsync(animal);
             await context.SaveChangesAsync();
         }
+
 
         public async Task<List<Animal>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
         {
@@ -26,14 +24,16 @@ namespace DataAccess
             return result;
         }
 
+
         public async Task<Animal> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
-        { 
+        {
             var result = await context.Animals.FindAsync(id);
             if (result == null)
                 throw new KeyNotFoundException();
             return result;
         }
-        
+
+
         public async Task<string> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
             var TargetAnimal = await context.Animals.FindAsync(id);
@@ -42,9 +42,11 @@ namespace DataAccess
                 throw new KeyNotFoundException();
             }
             var result = TargetAnimal.Eat();
-            await context.SaveChangesAsync(); // Для того, чтобы в БД сохранить изменившуюся энергию у животного, которого накормили
+            // Для того, чтобы в БД сохранить изменившуюся энергию у животного, которого накормили
+            await context.SaveChangesAsync();
             return result;
         }
+
 
         public async Task DeleteAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
         {
@@ -52,5 +54,18 @@ namespace DataAccess
             await context.SaveChangesAsync();
         }
 
+
+        // Other (Not REST)
+        public async Task<bool> ExistsByName(string name, CancellationToken cancellationToken = default)
+        {
+            bool result = await context.Animals.AnyAsync(n => n.Name == name);
+            return result;
+        }
+
+
+        public async Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default)
+        {
+            await context.Animals.Where(E => E.Energy > 0).ExecuteUpdateAsync(x => x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
+        }
     }
 }

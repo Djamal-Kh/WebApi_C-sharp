@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using LibraryAnimals;
 using AutoMapper;
 using ZooApi.DTO;
 using FluentValidation;
+using DomainAnimal.Interfaces;
+using WebApiAnimal.Filters;
 
 namespace ZooApi.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class AnimalController : ControllerBase
@@ -16,7 +16,7 @@ namespace ZooApi.Controllers
         private readonly IValidator<CreateAnimalDto> _createvAnimalValidator;
         private readonly ILogger<AnimalController> _logger;
 
-        public AnimalController(ILogger<AnimalController> logger,IAnimalService animalService, IMapper mapper, IValidator<CreateAnimalDto> createvAnimalValidator)   
+        public AnimalController(ILogger<AnimalController> logger, IAnimalService animalService, IMapper mapper, IValidator<CreateAnimalDto> createvAnimalValidator)
         {
             _animalService = animalService;
             _mapper = mapper;
@@ -27,11 +27,11 @@ namespace ZooApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAnimal([FromBody] CreateAnimalDto dto)
         {
-            _logger.LogInformation("Запуск метода Http POST для создания нового животного");
+            _logger.LogInformation("Запуск метода Http POST для создания нового животного. Входные данные: Type:{TypeOfAnimal} Name:{NameOfAnimal}", dto.Type, dto.Name);
             var validatorCreate = await _createvAnimalValidator.ValidateAsync(dto);
             if (!validatorCreate.IsValid)
             {
-                var errorsValidation = validatorCreate.Errors.Select(x => new {x.AttemptedValue, x.ErrorMessage });
+                var errorsValidation = validatorCreate.Errors.Select(x => new { x.AttemptedValue, x.ErrorMessage });
                 _logger.LogWarning("Входные данные не прошли валидацию: {Validation}", errorsValidation);
                 return BadRequest(errorsValidation);
             }
@@ -54,6 +54,7 @@ namespace ZooApi.Controllers
 
 
         [HttpGet("{id}")]
+        [ServiceFilter(typeof(CacheAttribute))]
         public async Task<IActionResult> GetAnimalById([FromRoute] int id)
         {
             _logger.LogInformation("Запуск метода Http GET для вывода информации о животном с Id = {AnimalId}", id);

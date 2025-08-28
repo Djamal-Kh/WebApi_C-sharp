@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DomainAnimal.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace DataAccess
@@ -43,7 +39,7 @@ namespace DataAccess
     {
         private const int LionEnegryGain = 50;
         public Lion() : base() { }
-        public Lion(string name) : base(AnimalType.Lion,name) {}
+        public Lion(string name) : base(AnimalType.Lion, name) { }
 
         public override string MakeSound()
         {
@@ -66,7 +62,7 @@ namespace DataAccess
     public class Monkey : Animal
     {
         public Monkey() : base() { }
-        public Monkey(string name) : base(AnimalType.Monkey,name) {}
+        public Monkey(string name) : base(AnimalType.Monkey, name) { }
         public override string MakeSound()
         {
             return "UGUGUUUGGUUU";

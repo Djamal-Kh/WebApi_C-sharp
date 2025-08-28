@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using DataAccess;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 
-namespace DataAccess
+
+namespace DomainAnimal.Interfaces
 {
 
     [JsonDerivedType(typeof(Lion), typeDiscriminator: "Lion")]

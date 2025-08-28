@@ -1,4 +1,5 @@
-﻿using System.Data.SqlTypes;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
 using System.Net;
 using ZooApi.DTO;
 
@@ -22,24 +23,43 @@ namespace ZooApi.Middlewares
                 await _next(httpContext);
             }
 
-            catch(ArgumentException ex)
+
+            catch (ArgumentOutOfRangeException ex)
+            {
+                _logger.LogError($"Значение вне диапозона допустимых значений: {ex.Message}");
+                await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.InternalServerError, "Argument out of Range");
+            }
+
+
+            catch (ArgumentException ex)
             {
                 _logger.LogError("Создание животного провалено. Validation failed ! Invalid input data! Error: {Error}", ex);
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.BadRequest, "Invalid input data! The animal species field is filled in incorrectly");
             }
 
-            catch(SqlNullValueException ex)
+
+            catch (ValidationException ex)
+            {
+                _logger.LogError($"Животное с таким именем уже существует: {ex.Message}");
+                await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.BadRequest, "Already exists with this name");
+            }
+
+
+            catch (SqlNullValueException ex)
             {
                 _logger.LogError("Возврат всех животных пользователю провалено. Нет никаких животных в БД !");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.NotFound, "There are no animals in the zoo");
             }
 
-            catch(KeyNotFoundException ex)
-            {   _logger.LogError($"Животное с таким Id не было найдено: {ex.Message}");
+
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogError($"Животное с таким Id не было найдено: {ex.Message}");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.NotFound, "Animal Not Found");
             }
 
-            catch(Exception ex)
+
+            catch (Exception ex)
             {
                 _logger.LogCritical("Какая-то дыра/баг в приложении т.к. данное исключение не должно обрабатываться при нормальной работе !!!");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.InternalServerError, "Something strange happened");
@@ -47,7 +67,7 @@ namespace ZooApi.Middlewares
         }
 
 
-        private async Task HandleExceptionAsync(HttpContext context, string exMessage, HttpStatusCode statusCode, string message )
+        private async Task HandleExceptionAsync(HttpContext context, string exMessage, HttpStatusCode statusCode, string message)
         {
             _logger.LogError(exMessage);
 
@@ -60,7 +80,7 @@ namespace ZooApi.Middlewares
                 Message = message,
                 StatusCode = (int)statusCode
             };
-            
+
             await response.WriteAsJsonAsync(errorDto);
         }
     }

@@ -5,7 +5,7 @@ namespace ZooApi.Mapping
 {
     public class CreateAnimalProfile : Profile
     {
-        public CreateAnimalProfile() 
+        public CreateAnimalProfile()
         {
             CreateMap<Animal, CreateAnimalProfile>();
         }

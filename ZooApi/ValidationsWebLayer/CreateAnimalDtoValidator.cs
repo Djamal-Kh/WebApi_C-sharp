@@ -1,7 +1,4 @@
 ﻿using FluentValidation;
-using FluentValidation.Validators;
-using FluentValidation.AspNetCore;
-
 using ZooApi.DTO;
 using System.Text.RegularExpressions;
 

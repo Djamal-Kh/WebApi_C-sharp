@@ -20,8 +20,4 @@
     <ProjectReference Include="..\DataAccess\DomainAnimal.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ValidationsApplicationLayer\" />
-  </ItemGroup>
-
 </Project>
