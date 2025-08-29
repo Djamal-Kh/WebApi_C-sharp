@@ -3,23 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiAnimal", "ZooApi\WebApiAnimal.csproj", "{AE80531C-99A0-4461-83FE-76A73B3D17FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiAnimal", "ZooApi.Source\WebApiAnimal\WebApiAnimal.csproj", "{AE80531C-99A0-4461-83FE-76A73B3D17FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationAnimal", "LibraryAnimals\ApplicationAnimal.csproj", "{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationAnimal", "ZooApi.Source\ApplicationAnimal\ApplicationAnimal.csproj", "{690D49BD-3FE0-4054-8669-4AD6A2EA2B70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainAnimal", "DataAccess\DomainAnimal.csproj", "{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainAnimal", "ZooApi.Source\DomainAnimal\DomainAnimal.csproj", "{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "ZooApi.Source\Infrastructure\Infrastructure.csproj", "{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZooApi.Tests", "ZooApi.Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiAnimal.Tests", "WebApiAnimal.Tests\WebApiAnimal.Tests.csproj", "{05CBEC39-D674-46A1-B733-67F5FB98E466}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiAnimal.Tests", "ZooApi.Tests\WebApiAnimal.Tests\WebApiAnimal.Tests.csproj", "{05CBEC39-D674-46A1-B733-67F5FB98E466}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Tests", "Infrastructure.Tests\Infrastructure.Tests.csproj", "{80FF771F-9B7B-4EAC-85AC-EF6799AF762D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Tests", "ZooApi.Tests\Infrastructure.Tests\Infrastructure.Tests.csproj", "{80FF771F-9B7B-4EAC-85AC-EF6799AF762D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainAnimal.Tests", "DomainAnimal.Tests\DomainAnimal.Tests.csproj", "{8ACB3213-2FC0-48A3-91A4-0BB115FE2889}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainAnimal.Tests", "ZooApi.Tests\DomainAnimal.Tests\DomainAnimal.Tests.csproj", "{8ACB3213-2FC0-48A3-91A4-0BB115FE2889}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationAnimal.Tests", "ApplicationAnimal.Tests\ApplicationAnimal.Tests.csproj", "{0890A1CD-110E-4463-A8EC-3661708E5967}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationAnimal.Tests", "ZooApi.Tests\ApplicationAnimal.Tests\ApplicationAnimal.Tests.csproj", "{0890A1CD-110E-4463-A8EC-3661708E5967}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZooApi.Source", "ZooApi.Tests\ZooApi.Source", "{2D2436A5-1924-45A9-AE51-865FCC158270}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{AE80531C-99A0-4461-83FE-76A73B3D17FF} = {2D2436A5-1924-45A9-AE51-865FCC158270}
+		{690D49BD-3FE0-4054-8669-4AD6A2EA2B70} = {2D2436A5-1924-45A9-AE51-865FCC158270}
+		{B0C7DDCB-FB55-404C-BFF8-2E7374C9AA78} = {2D2436A5-1924-45A9-AE51-865FCC158270}
+		{69F561ED-A8BD-4139-8BA4-4D3B4FEA6A8F} = {2D2436A5-1924-45A9-AE51-865FCC158270}
 		{05CBEC39-D674-46A1-B733-67F5FB98E466} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{80FF771F-9B7B-4EAC-85AC-EF6799AF762D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{8ACB3213-2FC0-48A3-91A4-0BB115FE2889} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
