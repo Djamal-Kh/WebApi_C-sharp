@@ -37,23 +37,29 @@ namespace DataAccess
 
     public class Lion : Animal
     {
-        private const int LionEnegryGain = 50;
+        private const int LionEnegryGain = 30;
+
         public Lion() : base() { }
         public Lion(string name) : base(AnimalType.Lion, name) { }
 
         public override string MakeSound()
         {
-            return "ARRRRRRR ";
+            return "ARRRRRRR";
         }
         public override string Eat()
         {
             if (Energy >= MaxEnergy)
             {
+                Energy = MaxEnergy;
                 return "Лев наелся";
             }
             else
             {
                 Energy += LionEnegryGain;
+
+                if (Energy >= MaxEnergy)
+                    Energy = MaxEnergy;
+
                 return MakeSound();
             }
         }
@@ -61,6 +67,8 @@ namespace DataAccess
 
     public class Monkey : Animal
     {
+        private const int MonkeyEnegryGain = 50;
+
         public Monkey() : base() { }
         public Monkey(string name) : base(AnimalType.Monkey, name) { }
         public override string MakeSound()
@@ -72,11 +80,16 @@ namespace DataAccess
         {
             if (Energy >= MaxEnergy)
             {
+                Energy = MaxEnergy;
                 return "Обезьяна наелась";
             }
             else
             {
-                Energy += 50;
+                Energy += MonkeyEnegryGain;
+
+                if (Energy >= MaxEnergy)
+                    Energy = MaxEnergy;
+
                 return MakeSound();
             }
         }
