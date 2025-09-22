@@ -1,5 +1,6 @@
 ﻿using DomainAnimal.Entities;
 using DomainAnimal.Interfaces;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 
