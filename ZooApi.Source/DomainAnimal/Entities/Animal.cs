@@ -17,7 +17,7 @@ namespace DomainAnimal.Entities
         public int Id { get; set; }
 
         public AnimalType Type { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = "NoName";
         public int Energy { get; set; } = 50;
 
         public Guid SecretInformation { get; set; }
@@ -39,7 +39,10 @@ namespace DomainAnimal.Entities
     {
         private const int LionEnegryGain = 30;
 
-        public Lion() : base() { }
+        public Lion() : base() 
+        { 
+            Type = AnimalType.Lion;
+        }
         public Lion(string name) : base(AnimalType.Lion, name) { }
 
         public override string MakeSound()
@@ -53,6 +56,7 @@ namespace DomainAnimal.Entities
                 Energy = MaxEnergy;
                 return "Лев наелся";
             }
+
             else
             {
                 Energy += LionEnegryGain;
@@ -69,7 +73,10 @@ namespace DomainAnimal.Entities
     {
         private const int MonkeyEnegryGain = 50;
 
-        public Monkey() : base() { }
+        public Monkey() : base() 
+        { 
+            Type = AnimalType.Monkey;
+        }
         public Monkey(string name) : base(AnimalType.Monkey, name) { }
         public override string MakeSound()
         {

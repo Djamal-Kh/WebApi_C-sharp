@@ -33,7 +33,7 @@ namespace ApplicationAnimal.BackgroundServ
                 using (var scope = _scopeFactory.CreateScope()) 
                 {
                     var animalRepository = scope.ServiceProvider.GetRequiredService<IAnimalRepository>();
-                    _logger.LogInformation("Снижение энергии у животного на {decrementValue} единиц", decrementValue);
+                    _logger.LogInformation("Снижение энергии у животных на {decrementValue} единиц", decrementValue);
                     await animalRepository.DecrementAnimalEnergyAsync(decrementValue);
                 }
             }

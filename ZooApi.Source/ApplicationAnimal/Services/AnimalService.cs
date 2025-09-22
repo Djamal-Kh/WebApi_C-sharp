@@ -3,8 +3,6 @@ using DomainAnimal.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 
-
-
 namespace ApplicationAnimal.Services
 {
 
@@ -22,7 +20,7 @@ namespace ApplicationAnimal.Services
         public async Task<Animal> CreateAnimalAsync(AnimalType animalType, string NameOfAnimal, CancellationToken cancellationToken = default)
         {
             /* Была мысль использовать здесь GOF паттерн "Фабричный метод" для практики, но в данном контексте он будет здесь лишним 
-              т.к. слишком громоздкий и код становится менее читаемым */
+              т.к. код становится слишком громоздким и менее читаемым */
             _logger.LogInformation("Попытка создать животное с Name: {Name}", NameOfAnimal);
             bool ExistsName = await _animalRepository.ExistsByName(NameOfAnimal);
             if (ExistsName)
@@ -30,7 +28,6 @@ namespace ApplicationAnimal.Services
                 _logger.LogWarning("Попытка создать животное с Name: {Name} ПРОВАЛЕНА !", NameOfAnimal);
                 throw new ValidationException();
             }
-
 
             Animal newAnimal;
             switch (animalType)
@@ -65,6 +62,7 @@ namespace ApplicationAnimal.Services
         }
 
 
+        // Тут у меня вызываемый репозиторий "умный" 
         public async Task<string> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
             var result = await _animalRepository.FeedAnimalAsync(id);
@@ -72,13 +70,17 @@ namespace ApplicationAnimal.Services
         }
 
 
+        /*Здесь же репозиторий "тупой". 
+          Сделал я это чтобы сравнить два подхода.
+          Сейчас я понимаю, что к чистой архитектуре больше подходит подход
+          с "тупым" репозиторием*/
         public async Task<string> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
             var animal = await _animalRepository.GetAnimalByIdAsync(id);
+
             await _animalRepository.DeleteAnimalAsync(animal);
             string result = $"Животное с id = {id} было удалено";
             return result;
         }
-
     }
 }

@@ -22,6 +22,7 @@ namespace DomainAnimal.Tests.Entities
         [InlineData(80, 100, "ARRRRRRR")]
         [InlineData(100, 100, "Лев наелся")]
         [InlineData(150, 100, "Лев наелся")]
+        
         public void Eat_WithVariousEnergy_CorrectBehaviour(int initialEnergy, int expectedEnergy, string expectedResult)
         {
             //Arrange
@@ -33,6 +34,22 @@ namespace DomainAnimal.Tests.Entities
             //Assert
             lionResult.Should().BeEquivalentTo(expectedResult);
             _lion.Energy.Should().Be(expectedEnergy);
+        }
+
+        [Fact]
+        public void ReturnDefaultValue_WhenLionHasNoName()
+        {
+            //Arrange
+            var lion = new Lion { };
+            string expectedString = "NoName";
+            int expectedEnergy = 50;
+
+            //Act
+            var monkeyResult = lion.Name;
+
+            //Arrange
+            lion.Name.Should().Be(expectedString);
+            lion.Energy.Should().Be(expectedEnergy);
         }
     }
 
@@ -61,6 +78,22 @@ namespace DomainAnimal.Tests.Entities
             //Assert
             monkeyResult.Should().BeEquivalentTo(expectedResult);
             _monkey.Energy.Should().Be(expectedEnergy);
+        }
+
+        [Fact]
+        public void ReturnDefaultValue_WhenMonkeyHasNoName()
+        {
+            //Arrange
+            var monkey = new Monkey { };
+            string expectedString = "NoName";
+            int expectedEnergy = 50;
+
+            //Act
+            var monkeyResult = monkey.Name;
+
+            //Arrange
+            monkey.Name.Should().Be(expectedString);
+            monkey.Energy.Should().Be(expectedEnergy);
         }
     }
 }

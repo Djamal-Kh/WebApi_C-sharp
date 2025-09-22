@@ -32,6 +32,7 @@ namespace Infrastructure.Repositories
             var result = await context.Animals.FindAsync(id);
             if (result == null)
                 throw new KeyNotFoundException();
+
             return result;
         }
 
@@ -57,7 +58,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        // Other (Not REST)
+        // Other (Not HTTP Methods)
         public async Task<bool> ExistsByName(string name, CancellationToken cancellationToken = default)
         {
             bool result = await context.Animals.AnyAsync(n => n.Name == name);
@@ -67,7 +68,7 @@ namespace Infrastructure.Repositories
 
         public async Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default)
         {
-            await context.Animals.Where(E => E.Energy > 0).ExecuteUpdateAsync(x => x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
+            await context.Animals.Where(E => E.Energy > 0 && E.Energy >= decrementValue).ExecuteUpdateAsync(x => x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
         }
     }
 }

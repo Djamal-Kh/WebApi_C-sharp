@@ -4,8 +4,10 @@ using DomainAnimal.Interfaces;
 using FluentValidation;
 using Infrastructure.ContextsDb;
 using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using WebApiAnimal.Filters;
 using ZooApi.DTO;
 using ZooApi.Mapping;
@@ -14,7 +16,6 @@ using ZooApi.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
-
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

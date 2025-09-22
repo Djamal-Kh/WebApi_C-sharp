@@ -4,6 +4,7 @@ using ZooApi.DTO;
 using FluentValidation;
 using DomainAnimal.Interfaces;
 using WebApiAnimal.Filters;
+using WebApiAnimal.DTO;
 
 namespace ZooApi.Controllers
 {
@@ -31,9 +32,9 @@ namespace ZooApi.Controllers
             var validatorCreate = await _createvAnimalValidator.ValidateAsync(dto);
             if (!validatorCreate.IsValid)
             {
-                var errorsValidation = validatorCreate.Errors.Select(x => new { x.AttemptedValue, x.ErrorMessage });
-                _logger.LogWarning("Входные данные не прошли валидацию: {Validation}", errorsValidation);
-                return BadRequest(errorsValidation);
+                var validationErrors = validatorCreate.Errors.Select(x => new ValidationErrorDto { AttemptedValue = x.AttemptedValue, ErrorMessage = x.ErrorMessage});
+                _logger.LogWarning("Входные данные не прошли валидацию: {Validation}", validationErrors);
+                return BadRequest(validationErrors);
             }
 
             var animal = await _animalService.CreateAnimalAsync(dto.Type, dto.Name);
@@ -83,6 +84,5 @@ namespace ZooApi.Controllers
             _logger.LogInformation("Успешное удаление животного с Id = {AnimalId}", id);
             return Ok(result);
         }
-
     }
 }
