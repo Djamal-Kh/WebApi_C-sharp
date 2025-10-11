@@ -7,6 +7,7 @@ using System.Data.SqlTypes;
 
 namespace Infrastructure.Repositories
 {
+    // ПЕРЕНСИ ВАЛИДАЦИЮ В СЕРВИС !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public class AnimalRepository(AppContextDB context) : IAnimalRepository
     {
         // REST

@@ -38,6 +38,7 @@ namespace ZooApi.Controllers
             }
 
             var animal = await _animalService.CreateAnimalAsync(dto.Type, dto.Name);
+
             var result = _mapper.Map<AnimalDto>(animal);
             _logger.LogInformation("Успешно создано новое животное с Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", result.Id, result.Name, result.Type);
             return Ok(result);
@@ -48,6 +49,7 @@ namespace ZooApi.Controllers
         {
             _logger.LogInformation("Запуск метода Http GET для вывода информации о всех животных");
             var animals = await _animalService.GetAllAnimalsAsync();
+
             var result = _mapper.Map<List<AnimalDto>>(animals);
             _logger.LogInformation("Успешный вывод всех животных содержащихся в БД. Общее количество животных = {AnimalCount}", animals.Count);
             return Ok(result);
@@ -60,6 +62,7 @@ namespace ZooApi.Controllers
         {
             _logger.LogInformation("Запуск метода Http GET для вывода информации о животном с Id = {AnimalId}", id);
             var animal = await _animalService.GetAnimalByIdAsync(id);
+
             var result = _mapper.Map<AnimalDto>(animal);
             _logger.LogInformation("Успешный вывод животного с Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", result.Id, result.Name, result.Type);
             return Ok(result);

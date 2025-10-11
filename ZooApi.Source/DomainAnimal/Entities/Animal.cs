@@ -10,41 +10,45 @@ namespace DomainAnimal.Entities
         Monkey,
     }
 
+
     public abstract class Animal : IAnimal
     {
         protected const int MaxEnergy = 100;
         [Key]
-        public int Id { get; set; }
+        public int Id { get; protected set; }
+        public AnimalType Type { get; protected set; }
+        public string Name { get; protected set; }
+        public int Energy { get; protected set; }
+        public Guid SecretInformation { get; private set; }
 
-        public AnimalType Type { get; set; }
-        public string Name { get; set; } = "NoName";
-        public int Energy { get; set; } = 50;
-
-        public Guid SecretInformation { get; set; }
-
-        public Animal(AnimalType type, string name)
+        protected Animal(AnimalType type, string name, int energy)
         {
+            if(string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException();
+
+            if(Energy < 0 || Energy > 100)
+                throw new ArgumentOutOfRangeException();
+
             Type = type;
             Name = name;
+            Energy = energy;
         }
         protected Animal() { }
 
         public abstract string Eat();
         public abstract string MakeSound();
-
     }
-
 
     public class Lion : Animal
     {
         private const int LionEnegryGain = 30;
 
-        public Lion() : base() 
-        { 
-            Type = AnimalType.Lion;
-        }
-        public Lion(string name) : base(AnimalType.Lion, name) { }
+        private Lion(string name, int energy) : base(AnimalType.Lion, name, energy) { }
 
+        public static Lion Create(string name, int energy)
+        {
+            return new Lion(name, energy);
+        }
         public override string MakeSound()
         {
             return "ARRRRRRR";
@@ -73,11 +77,13 @@ namespace DomainAnimal.Entities
     {
         private const int MonkeyEnegryGain = 50;
 
-        public Monkey() : base() 
-        { 
-            Type = AnimalType.Monkey;
+        private Monkey(string name, int energy) : base(AnimalType.Monkey, name, energy) { }
+
+        public static Monkey Create(string name, int energy)
+        {
+            return new Monkey(name, energy);
         }
-        public Monkey(string name) : base(AnimalType.Monkey, name) { }
+
         public override string MakeSound()
         {
             return "UGUGUUUGGUUU";

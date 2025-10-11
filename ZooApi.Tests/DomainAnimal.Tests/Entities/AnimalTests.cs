@@ -14,7 +14,7 @@ namespace DomainAnimal.Tests.Entities
         private readonly Lion _lion;
         public LionTests()
         {
-            _lion = new Lion();
+            _lion = Lion.Create("Lion");
         }
 
         [Theory]
