@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace ZooApi.DTO
 {
-    public class CreateAnimalDto
+    public sealed class CreateAnimalDto
     {
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AnimalType Type { get; set; }

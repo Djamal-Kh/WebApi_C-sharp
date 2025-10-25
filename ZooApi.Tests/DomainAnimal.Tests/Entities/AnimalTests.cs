@@ -1,4 +1,5 @@
 ﻿using DomainAnimal.Entities;
+using DomainAnimal.Factories;
 using FluentAssertions;
 using Moq;
 using System;
@@ -12,10 +13,6 @@ namespace DomainAnimal.Tests.Entities
     public class LionTests
     {
         private readonly Lion _lion;
-        public LionTests()
-        {
-            _lion = Lion.Create("Lion");
-        }
 
         [Theory]
         [InlineData(30, 60, "ARRRRRRR")]
@@ -26,7 +23,7 @@ namespace DomainAnimal.Tests.Entities
         public void Eat_WithVariousEnergy_CorrectBehaviour(int initialEnergy, int expectedEnergy, string expectedResult)
         {
             //Arrange
-            _lion.Energy = initialEnergy;
+            Lion lion = Lion.Create("Name", energy: initialEnergy);
 
             //Act
             var lionResult = _lion.Eat();
@@ -35,32 +32,12 @@ namespace DomainAnimal.Tests.Entities
             lionResult.Should().BeEquivalentTo(expectedResult);
             _lion.Energy.Should().Be(expectedEnergy);
         }
-
-        [Fact]
-        public void ReturnDefaultValue_WhenLionHasNoName()
-        {
-            //Arrange
-            var lion = new Lion { };
-            string expectedString = "NoName";
-            int expectedEnergy = 50;
-
-            //Act
-            var monkeyResult = lion.Name;
-
-            //Arrange
-            lion.Name.Should().Be(expectedString);
-            lion.Energy.Should().Be(expectedEnergy);
-        }
     }
 
 
     public class MonkeyTests
     {
         private readonly Monkey _monkey;
-        public MonkeyTests()
-        {
-            _monkey = new Monkey();
-        }
 
         [Theory]
         [InlineData(30, 80, "UGUGUUUGGUUU")]
@@ -70,7 +47,7 @@ namespace DomainAnimal.Tests.Entities
         public void Eat_WithVariousEnergy_CorrectBehaviour(int initialEnergy, int expectedEnergy, string expectedResult)
         {
             //Arrange
-            _monkey.Energy = initialEnergy;
+            Monkey monkey = Monkey.Create("Name", energy: initialEnergy);
 
             //Act
             var monkeyResult = _monkey.Eat();
@@ -78,22 +55,6 @@ namespace DomainAnimal.Tests.Entities
             //Assert
             monkeyResult.Should().BeEquivalentTo(expectedResult);
             _monkey.Energy.Should().Be(expectedEnergy);
-        }
-
-        [Fact]
-        public void ReturnDefaultValue_WhenMonkeyHasNoName()
-        {
-            //Arrange
-            var monkey = new Monkey { };
-            string expectedString = "NoName";
-            int expectedEnergy = 50;
-
-            //Act
-            var monkeyResult = monkey.Name;
-
-            //Arrange
-            monkey.Name.Should().Be(expectedString);
-            monkey.Energy.Should().Be(expectedEnergy);
         }
     }
 }

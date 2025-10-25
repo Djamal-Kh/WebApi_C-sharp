@@ -2,19 +2,18 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 
-
 namespace WebApiAnimal.Filters
 {
     public class CacheAttribute : ActionFilterAttribute
     {
         private readonly ILogger<CacheAttribute> _logger;
-
         public CacheAttribute(ILogger<CacheAttribute> logger)
         {
             _logger = logger;
         }
 
         public int DurationSeconds = 30;
+
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();

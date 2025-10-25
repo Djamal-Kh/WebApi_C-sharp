@@ -2,13 +2,10 @@
 using DomainAnimal.Interfaces;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
-using System.Data.SqlTypes;
-
 
 namespace Infrastructure.Repositories
 {
-    // ПЕРЕНСИ ВАЛИДАЦИЮ В СЕРВИС !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public class AnimalRepository(AppContextDB context) : IAnimalRepository
+    public sealed class AnimalRepository(AppContextDB context) : IAnimalRepository
     {
         // REST
         public async Task CreateAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
@@ -17,40 +14,25 @@ namespace Infrastructure.Repositories
             await context.SaveChangesAsync();
         }
 
-
         public async Task<List<Animal>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
         {
-            var result = await context.Animals.OrderBy(a => a.Id).ToListAsync();
-            if (result.Count == 0)
-                throw new SqlNullValueException();
-
-            return result;
+            return await context.Animals.OrderBy(a => a.Id).ToListAsync();
         }
-
 
         public async Task<Animal> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await context.Animals.FindAsync(id);
-            if (result == null)
+            var animal = await context.Animals.FindAsync(id);
+            if (animal == null)
                 throw new KeyNotFoundException();
-
-            return result;
+            return animal;
         }
 
-
-        public async Task<string> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<string> FeedAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
         {
-            var TargetAnimal = await context.Animals.FindAsync(id);
-            if (TargetAnimal == null)
-            {
-                throw new KeyNotFoundException();
-            }
-            var result = TargetAnimal.Eat();
-            // Для того, чтобы в БД сохранить изменившуюся энергию у животного, которого накормили
+            var feedingResult = animal.Eat();
             await context.SaveChangesAsync();
-            return result;
+            return feedingResult;
         }
-
 
         public async Task DeleteAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
         {
@@ -58,14 +40,12 @@ namespace Infrastructure.Repositories
             await context.SaveChangesAsync();
         }
 
-
-        // Other (Not HTTP Methods)
+        // Other methods (Not HTTP Methods)
         public async Task<bool> ExistsByName(string name, CancellationToken cancellationToken = default)
         {
-            bool result = await context.Animals.AnyAsync(n => n.Name == name);
-            return result;
+            bool exist = await context.Animals.AnyAsync(n => n.Name == name);
+            return exist;
         }
-
 
         public async Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default)
         {

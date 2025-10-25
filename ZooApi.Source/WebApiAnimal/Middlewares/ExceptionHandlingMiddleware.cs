@@ -23,13 +23,11 @@ namespace ZooApi.Middlewares
                 await _next(httpContext);
             }
 
-
             catch (ArgumentOutOfRangeException ex)
             {
                 _logger.LogError($"Значение вне диапозона допустимых значений: {ex.Message}");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.InternalServerError, "Argument out of Range");
             }
-
 
             catch (ArgumentException ex)
             {
@@ -37,13 +35,11 @@ namespace ZooApi.Middlewares
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.BadRequest, "Invalid input data! The animal species field is filled in incorrectly");
             }
 
-
             catch (ValidationException ex)
             {
                 _logger.LogError($"Животное с таким именем уже существует: {ex.Message}");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.BadRequest, "Already exists with this name");
             }
-
 
             catch (SqlNullValueException ex)
             {
@@ -51,13 +47,11 @@ namespace ZooApi.Middlewares
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.NotFound, "There are no animals in the zoo");
             }
 
-
             catch (KeyNotFoundException ex)
             {
                 _logger.LogError($"Животное с таким Id не было найдено: {ex.Message}");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.NotFound, "Animal Not Found");
             }
-
 
             catch (Exception ex)
             {
@@ -66,13 +60,10 @@ namespace ZooApi.Middlewares
             }
         }
 
-
         private async Task HandleExceptionAsync(HttpContext context, string exMessage, HttpStatusCode statusCode, string message)
         {
             _logger.LogError(exMessage);
-
             HttpResponse response = context.Response;
-
             response.StatusCode = (int)statusCode;
 
             ErrorResponceDto errorDto = new()
@@ -80,11 +71,9 @@ namespace ZooApi.Middlewares
                 Message = message,
                 StatusCode = (int)statusCode
             };
-
             await response.WriteAsJsonAsync(errorDto);
         }
     }
-
 
     public static class ExceptionHandlingMiddlewareExtensions
     {

@@ -2,7 +2,7 @@
 
 namespace ZooApi.DTO
 {
-    public class AnimalDto
+    public sealed class AnimalDto
     {
         public int Id { get; set; }
         public AnimalType Type { get; set; }

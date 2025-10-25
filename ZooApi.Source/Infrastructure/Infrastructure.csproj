@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApplicationAnimal\ApplicationAnimal.csproj" />
     <ProjectReference Include="..\DomainAnimal\DomainAnimal.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
 </Project>

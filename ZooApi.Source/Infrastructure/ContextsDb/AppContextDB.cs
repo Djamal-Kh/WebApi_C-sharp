@@ -1,7 +1,6 @@
 ﻿using DomainAnimal.Entities;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Infrastructure.ContextsDb
 {
     public class AppContextDB : DbContext
@@ -10,7 +9,6 @@ namespace Infrastructure.ContextsDb
         public DbSet<Animal> Animals { get; set; }
         public DbSet<Lion> Lions { get; set; }
         public DbSet<Monkey> Monkeys { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,33 +19,28 @@ namespace Infrastructure.ContextsDb
                 .HasValue<Lion>("Lion")
                 .HasValue<Monkey>("Monkey");
 
-
             modelBuilder
                 .Entity<Animal>()
                 .HasKey(X => X.Id);
-
 
             modelBuilder
                 .Entity<Animal>()
                 .Property(x => x.Name)
                 .HasColumnName("Name");
 
-
             modelBuilder
                 .Entity<Animal>()
                 .Property(x => x.Energy)
                 .HasColumnName("EnergyOfAnimal");
-
 
             modelBuilder
                 .Entity<Animal>()
                 .Property(x => x.Type)
                 .HasConversion<string>();
 
-
             modelBuilder
                 .Entity<Animal>()
-                .Property(x => x.SecretInformation)
+                .Property(x => x.SomeSecretInformation)
                 .HasColumnName("SecretInformation")
                 .HasDefaultValueSql("gen_random_uuid()");
         }

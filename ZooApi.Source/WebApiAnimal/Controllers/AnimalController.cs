@@ -10,82 +10,87 @@ namespace ZooApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AnimalController : ControllerBase
+    public sealed class AnimalController : ControllerBase
     {
         private readonly IAnimalService _animalService;
         private readonly IMapper _mapper;
-        private readonly IValidator<CreateAnimalDto> _createvAnimalValidator;
+        private readonly IValidator<CreateAnimalDto> _createAnimalValidator;
         private readonly ILogger<AnimalController> _logger;
 
         public AnimalController(ILogger<AnimalController> logger, IAnimalService animalService, IMapper mapper, IValidator<CreateAnimalDto> createvAnimalValidator)
         {
             _animalService = animalService;
             _mapper = mapper;
-            _createvAnimalValidator = createvAnimalValidator;
+            _createAnimalValidator = createvAnimalValidator;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAnimal([FromBody] CreateAnimalDto dto)
+        public async Task<IActionResult> CreateAnimalAsync([FromBody] CreateAnimalDto dto)
         {
             _logger.LogInformation("Запуск метода Http POST для создания нового животного. Входные данные: Type:{TypeOfAnimal} Name:{NameOfAnimal}", dto.Type, dto.Name);
-            var validatorCreate = await _createvAnimalValidator.ValidateAsync(dto);
+            var validatorCreate = await _createAnimalValidator.ValidateAsync(dto);
             if (!validatorCreate.IsValid)
             {
-                var validationErrors = validatorCreate.Errors.Select(x => new ValidationErrorDto { AttemptedValue = x.AttemptedValue, ErrorMessage = x.ErrorMessage});
+                var validationErrors = validatorCreate.Errors
+                    .Select(x => new ValidationErrorDto { AttemptedValue = x.AttemptedValue, ErrorMessage = x.ErrorMessage});
+
                 _logger.LogWarning("Входные данные не прошли валидацию: {Validation}", validationErrors);
                 return BadRequest(validationErrors);
             }
 
-            var animal = await _animalService.CreateAnimalAsync(dto.Type, dto.Name);
+            var createdAnimal = await _animalService.CreateAnimalAsync(dto.Type, dto.Name);
 
-            var result = _mapper.Map<AnimalDto>(animal);
-            _logger.LogInformation("Успешно создано новое животное с Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", result.Id, result.Name, result.Type);
-            return Ok(result);
+            var createdAnimalDto = _mapper.Map<AnimalDto>(createdAnimal);
+            _logger.LogInformation("Успешно создано новое животное с Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", 
+                createdAnimalDto.Id, createdAnimalDto.Name, createdAnimalDto.Type);
+
+            return Ok(createdAnimalDto);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAnimals()
+        public async Task<IActionResult> GetAllAnimalsAsync()
         {
             _logger.LogInformation("Запуск метода Http GET для вывода информации о всех животных");
             var animals = await _animalService.GetAllAnimalsAsync();
 
-            var result = _mapper.Map<List<AnimalDto>>(animals);
-            _logger.LogInformation("Успешный вывод всех животных содержащихся в БД. Общее количество животных = {AnimalCount}", animals.Count);
-            return Ok(result);
+            var animalsDtos = _mapper.Map<List<AnimalDto>>(animals);
+            _logger.LogInformation("Успешный вывод всех животных содержащихся в БД. Общее количество животных = {AnimalCount}",
+                animals.Count);
+
+            return Ok(animalsDtos);
         }
 
-
-        [HttpGet("{id}")]
+        [HttpGet("{animalId}")]
         [ServiceFilter(typeof(CacheAttribute))]
-        public async Task<IActionResult> GetAnimalById([FromRoute] int id)
+        public async Task<IActionResult> GetAnimalByIdAsync([FromRoute] int id)
         {
             _logger.LogInformation("Запуск метода Http GET для вывода информации о животном с Id = {AnimalId}", id);
             var animal = await _animalService.GetAnimalByIdAsync(id);
 
-            var result = _mapper.Map<AnimalDto>(animal);
-            _logger.LogInformation("Успешный вывод животного с Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", result.Id, result.Name, result.Type);
-            return Ok(result);
+            var animalDto = _mapper.Map<AnimalDto>(animal);
+            _logger.LogInformation("Успешный вывод животного с Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}",
+                animalDto.Id, animalDto.Name, animalDto.Type);
+
+            return Ok(animalDto);
         }
 
-
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> FeedAnimal([FromRoute] int id)
+        [HttpPatch("{animalId}")]
+        public async Task<IActionResult> FeedAnimalAsync([FromRoute] int id)
         {
             _logger.LogInformation("Запуск метода Http PATCH для кормления животного с Id = {AnimalId}", id);
-            var result = await _animalService.FeedAnimalAsync(id);
+            var feedingMessage = await _animalService.FeedAnimalAsync(id);
             _logger.LogInformation("Метод PATCH (кормление) прошел успешно !");
-            return Ok(result);
+            return Ok(feedingMessage);
         }
 
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAnimal([FromRoute] int id)
+        [HttpDelete("{animalId}")]
+        public async Task<IActionResult> DeleteAnimalAsync([FromRoute] int id)
         {
             _logger.LogInformation("Запуск метода Http Delete для удаления животного с Id = {AnimalId}", id);
-            var result = await _animalService.DeleteAnimalAsync(id);
+            var deleteMessage = await _animalService.DeleteAnimalAsync(id);
             _logger.LogInformation("Успешное удаление животного с Id = {AnimalId}", id);
-            return Ok(result);
+            return Ok(deleteMessage);
         }
     }
 }

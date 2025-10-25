@@ -32,9 +32,9 @@ namespace ApplicationAnimal.BackgroundServ
                 // При каждом вызове DecrementAnimalEnergyAsync (Singleton) создается новая область IAnimalRepository (Scoped) для того чтобы Singleton не хранил в себе постоянно один и тот же Scoped
                 using (var scope = _scopeFactory.CreateScope()) 
                 {
-                    var animalRepository = scope.ServiceProvider.GetRequiredService<IAnimalRepository>();
+                    var scopeOfAnimalRepository = scope.ServiceProvider.GetRequiredService<IAnimalRepository>();
                     _logger.LogInformation("Снижение энергии у животных на {decrementValue} единиц", decrementValue);
-                    await animalRepository.DecrementAnimalEnergyAsync(decrementValue);
+                    await scopeOfAnimalRepository.DecrementAnimalEnergyAsync(decrementValue);
                 }
             }
         }

@@ -1,6 +1,6 @@
 ﻿namespace ZooApi.DTO
 {
-    public class ErrorResponceDto
+    public sealed class ErrorResponceDto
     {
         public int StatusCode { get; set; }
         public string Message { get; set; }

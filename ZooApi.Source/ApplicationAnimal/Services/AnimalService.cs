@@ -1,15 +1,14 @@
 ﻿using DomainAnimal.Entities;
 using DomainAnimal.Factories;
 using DomainAnimal.Interfaces;
-using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
 
-// ПЕРЕНЕСИ ВАЛИДАЦИЮ СЮДА ИЗ РЕПОЗИТОРИЯ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 namespace ApplicationAnimal.Services
 {
 
-    public class AnimalService : IAnimalService
+    public sealed class AnimalService : IAnimalService
     {
         private readonly ILogger<AnimalService> _logger;
         private readonly IAnimalRepository _animalRepository;
@@ -20,50 +19,51 @@ namespace ApplicationAnimal.Services
             _animalRepository = animalRepository;
         }
 
-        public async Task<Animal> CreateAnimalAsync(AnimalType animalType, string NameOfAnimal, CancellationToken cancellationToken = default)
+        public async Task<Animal> CreateAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Попытка создать животное с Name: {Name}", NameOfAnimal);
-            bool ExistsName = await _animalRepository.ExistsByName(NameOfAnimal);
-            if (ExistsName)
+            _logger.LogInformation("Попытка создать животное с Name: {Name}", nameOfAnimal);
+            bool existsName = await _animalRepository.ExistsByName(nameOfAnimal, cancellationToken);
+            if (existsName)
             {
-                _logger.LogWarning("Попытка создать животное с Name: {Name} ПРОВАЛЕНА !", NameOfAnimal);
+                _logger.LogWarning("Попытка создать животное с Name: {Name} ПРОВАЛЕНА !", nameOfAnimal);
                 throw new ValidationException();
             }
 
-            Animal newAnimal = AnimalFactory.Create(animalType, NameOfAnimal);
-            await _animalRepository.CreateAnimalAsync(newAnimal);
+            Animal newAnimal = AnimalFactory.Create(animalType, nameOfAnimal);
+            await _animalRepository.CreateAnimalAsync(newAnimal, cancellationToken);
             return newAnimal;
         }
 
         public async Task<List<Animal>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.GetAllAnimalsAsync();
-            return animal;
+            var animals = await _animalRepository.GetAllAnimalsAsync(cancellationToken);
+            if(!animals.Any())
+            {
+                _logger.LogWarning("Отсутствуют животные в БД !");
+                throw new SqlNullValueException();
+            }
+
+
+            return animals;
         }
 
         public async Task<Animal> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.GetAnimalByIdAsync(id);
-            return animal;
+            return await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
         }
 
-        // Тут у меня вызываемый репозиторий "умный" 
         public async Task<string> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _animalRepository.FeedAnimalAsync(id);
-            return result;
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            var feedingResult = await _animalRepository.FeedAnimalAsync(animal, cancellationToken);
+            return feedingResult;
         }
 
-        /*Здесь же репозиторий "тупой". 
-          Сделал я это чтобы сравнить два подхода.
-          Сейчас я понимаю, что к чистой архитектуре больше подходит подход
-          с "тупым" репозиторием*/
         public async Task<string> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.GetAnimalByIdAsync(id);
-            await _animalRepository.DeleteAnimalAsync(animal);
-            string result = $"Животное с id = {id} было удалено";
-            return result;
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            await _animalRepository.DeleteAnimalAsync(animal, cancellationToken);
+            return $"Животное с id = {id} было удалено";
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using DomainAnimal.Entities;
 using System.Text.Json.Serialization;
 
-
-
 namespace DomainAnimal.Interfaces
 {
 

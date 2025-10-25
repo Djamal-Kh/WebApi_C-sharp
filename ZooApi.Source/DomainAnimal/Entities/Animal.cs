@@ -1,7 +1,6 @@
 ﻿using DomainAnimal.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace DomainAnimal.Entities
 {
     public enum AnimalType
@@ -9,7 +8,6 @@ namespace DomainAnimal.Entities
         Lion,
         Monkey,
     }
-
 
     public abstract class Animal : IAnimal
     {
@@ -19,21 +17,22 @@ namespace DomainAnimal.Entities
         public AnimalType Type { get; protected set; }
         public string Name { get; protected set; }
         public int Energy { get; protected set; }
-        public Guid SecretInformation { get; private set; }
+        public Guid SomeSecretInformation { get; private set; }
 
+        // конструктор без параметров для EF Core
+        protected Animal() { }
         protected Animal(AnimalType type, string name, int energy)
         {
             if(string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException();
 
-            if(Energy < 0 || Energy > 100)
+            if(energy < 0 || energy > 100)
                 throw new ArgumentOutOfRangeException();
 
             Type = type;
             Name = name;
             Energy = energy;
         }
-        protected Animal() { }
 
         public abstract string Eat();
         public abstract string MakeSound();
