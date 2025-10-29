@@ -1,4 +1,5 @@
 ﻿using DomainAnimal.Entities;
+using DomainAnimal.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.ContextsDb
@@ -7,11 +8,11 @@ namespace Infrastructure.ContextsDb
     {
         public AppContextDB(DbContextOptions<AppContextDB> options) : base(options) { }
         public DbSet<Animal> Animals { get; set; }
-        public DbSet<Lion> Lions { get; set; }
-        public DbSet<Monkey> Monkeys { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Настройка модели (таблицы в БД) животных
             modelBuilder
                 .Entity<Animal>()
                 .ToTable("AnimalsOfZoo")
@@ -43,6 +44,34 @@ namespace Infrastructure.ContextsDb
                 .Property(x => x.SomeSecretInformation)
                 .HasColumnName("SecretInformation")
                 .HasDefaultValueSql("gen_random_uuid()");
+
+            modelBuilder
+                .Entity<Animal>()
+                .HasOne(x => x.Employee)
+                .WithMany(x => x.Animals)
+                .HasForeignKey(x => x.EmployeeId)
+                .OnDelete(DeleteBehavior.SetNull);
+                
+
+            // Настройка модели (таблицы в БД) сотрудников
+            modelBuilder
+                .Entity<Employee>()
+                .ToTable("EmployeesOfZoo");
+
+            modelBuilder
+                .Entity<Employee>()
+                .HasKey(X => X.Id);
+
+            modelBuilder
+                .Entity<Employee>()
+                .Property(x => x.Name)
+                .HasColumnName("Name");
+
+            modelBuilder
+                .Entity<Employee>()
+                .Property(x => x.Position)
+                .HasConversion<string>()
+                .HasColumnName("Position");
         }
     }
 }

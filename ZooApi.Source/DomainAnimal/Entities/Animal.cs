@@ -18,6 +18,8 @@ namespace DomainAnimal.Entities
         public string Name { get; protected set; }
         public int Energy { get; protected set; }
         public Guid SomeSecretInformation { get; private set; }
+        public int? EmployeeId { get; protected set; }
+        public Employee Employee { get; protected set; }
 
         // конструктор без параметров для EF Core
         protected Animal() { }

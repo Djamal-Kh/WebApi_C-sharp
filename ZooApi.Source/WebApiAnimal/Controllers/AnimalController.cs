@@ -63,7 +63,7 @@ namespace ZooApi.Controllers
 
         [HttpGet("{animalId}")]
         [ServiceFilter(typeof(CacheAttribute))]
-        public async Task<IActionResult> GetAnimalByIdAsync([FromRoute] int id)
+        public async Task<IActionResult> GetAnimalByIdAsync([FromRoute(Name = "animalId")] int id)
         {
             _logger.LogInformation("Запуск метода Http GET для вывода информации о животном с Id = {AnimalId}", id);
             var animal = await _animalService.GetAnimalByIdAsync(id);
@@ -76,7 +76,7 @@ namespace ZooApi.Controllers
         }
 
         [HttpPatch("{animalId}")]
-        public async Task<IActionResult> FeedAnimalAsync([FromRoute] int id)
+        public async Task<IActionResult> FeedAnimalAsync([FromRoute(Name = "animalId")] int id)
         {
             _logger.LogInformation("Запуск метода Http PATCH для кормления животного с Id = {AnimalId}", id);
             var feedingMessage = await _animalService.FeedAnimalAsync(id);
@@ -85,7 +85,7 @@ namespace ZooApi.Controllers
         }
 
         [HttpDelete("{animalId}")]
-        public async Task<IActionResult> DeleteAnimalAsync([FromRoute] int id)
+        public async Task<IActionResult> DeleteAnimalAsync([FromRoute(Name = "animalId")] int id)
         {
             _logger.LogInformation("Запуск метода Http Delete для удаления животного с Id = {AnimalId}", id);
             var deleteMessage = await _animalService.DeleteAnimalAsync(id);
