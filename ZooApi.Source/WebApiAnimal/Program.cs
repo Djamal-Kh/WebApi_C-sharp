@@ -6,6 +6,8 @@ using Infrastructure.ContextsDb;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Configuration;
+using Serilog;
 using WebApiAnimal.Filters;
 using ZooApi.DTO;
 using ZooApi.Mapping;
@@ -21,15 +23,16 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
     });
 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 builder.Services.AddHttpLogging(logging =>
 {
     logging.LoggingFields = HttpLoggingFields.All;
 });
-
-builder.Logging
-    .ClearProviders()
-    .AddConsole()
-    .SetMinimumLevel(LogLevel.Debug);
 
 //builder.WebHost.UseUrls("http://0.0.0.0:8080"); // - хост, использующийся в Docker. Также для запуска с Docker, необходимо в appsettings.json заменить localhost на postgre_db
 builder.Services.AddEndpointsApiExplorer();
@@ -55,6 +58,8 @@ app.UseExceptionHandlingMiddleware();
 using var scope = app.Services.CreateScope();
 var db = scope.ServiceProvider.GetRequiredService<AppContextDB>();
 await db.Database.MigrateAsync();
+
+Log.Information("Application ZooApi starting up");
 
 app.UseSwagger();
 app.UseSwaggerUI();

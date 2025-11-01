@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Serilog;
+using System.ComponentModel.DataAnnotations;
 using System.Data.SqlTypes;
 using System.Net;
 using ZooApi.DTO;

@@ -21,11 +21,11 @@ namespace ApplicationAnimal.Services
 
         public async Task<Animal> CreateAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Попытка создать животное с Name: {Name}", nameOfAnimal);
+            _logger.LogInformation("Try add Animal with Name: {Name}", nameOfAnimal);
             bool existsName = await _animalRepository.ExistsByName(nameOfAnimal, cancellationToken);
             if (existsName)
             {
-                _logger.LogWarning("Попытка создать животное с Name: {Name} ПРОВАЛЕНА !", nameOfAnimal);
+                _logger.LogWarning("Attempt to create an animal with Name: {Name} is failed !", nameOfAnimal);
                 throw new ValidationException();
             }
 
@@ -39,7 +39,7 @@ namespace ApplicationAnimal.Services
             var animals = await _animalRepository.GetAllAnimalsAsync(cancellationToken);
             if(!animals.Any())
             {
-                _logger.LogWarning("Отсутствуют животные в БД !");
+                _logger.LogWarning("No animals in the Database !");
                 throw new SqlNullValueException();
             }
 
