@@ -1,6 +1,6 @@
 ﻿using DomainAnimal.Entities;
 
-namespace DomainAnimal.Interfaces
+namespace ApplicationAnimal.Common.Interfaces
 {
     public interface IAnimalRepository
     {

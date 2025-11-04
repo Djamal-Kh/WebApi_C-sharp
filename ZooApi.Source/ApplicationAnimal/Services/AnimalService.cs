@@ -1,6 +1,7 @@
-﻿using DomainAnimal.Entities;
+﻿using ApplicationAnimal.Common.Interfaces;
+using ApplicationAnimal.Common.ResultPattern;
+using DomainAnimal.Entities;
 using DomainAnimal.Factories;
-using DomainAnimal.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System.Data.SqlTypes;
@@ -19,19 +20,19 @@ namespace ApplicationAnimal.Services
             _animalRepository = animalRepository;
         }
 
-        public async Task<Animal> CreateAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
+        public async Task<Result<Animal>> CreateAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Try add Animal with Name: {Name}", nameOfAnimal);
             bool existsName = await _animalRepository.ExistsByName(nameOfAnimal, cancellationToken);
             if (existsName)
             {
                 _logger.LogWarning("Attempt to create an animal with Name: {Name} is failed !", nameOfAnimal);
-                throw new ValidationException();
+                return Result<Animal>.Failure(new Error("Already exists with this name", "BadRequest"));
             }
 
             Animal newAnimal = AnimalFactory.Create(animalType, nameOfAnimal);
             await _animalRepository.CreateAnimalAsync(newAnimal, cancellationToken);
-            return newAnimal;
+            return Result<Animal>.Success(newAnimal);
         }
 
         public async Task<List<Animal>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)

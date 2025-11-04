@@ -1,6 +1,6 @@
 using ApplicationAnimal.BackgroundServ;
+using ApplicationAnimal.Common.Interfaces;
 using ApplicationAnimal.Services;
-using DomainAnimal.Interfaces;
 using FluentValidation;
 using Infrastructure.ContextsDb;
 using Infrastructure.Repositories;

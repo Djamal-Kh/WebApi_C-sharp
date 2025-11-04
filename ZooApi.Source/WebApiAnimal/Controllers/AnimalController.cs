@@ -2,9 +2,9 @@
 using AutoMapper;
 using ZooApi.DTO;
 using FluentValidation;
-using DomainAnimal.Interfaces;
 using WebApiAnimal.Filters;
 using WebApiAnimal.DTO;
+using ApplicationAnimal.Common.Interfaces;
 
 namespace ZooApi.Controllers
 {
@@ -40,6 +40,10 @@ namespace ZooApi.Controllers
             }
 
             var createdAnimal = await _animalService.CreateAnimalAsync(dto.Type, dto.Name);
+            if (!createdAnimal.IsSuccess)
+            {
+                return BadRequest(createdAnimal);
+            }
 
             var createdAnimalDto = _mapper.Map<AnimalDto>(createdAnimal);
             _logger.LogInformation("Http POST (Animal) success. Property added object: Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", 

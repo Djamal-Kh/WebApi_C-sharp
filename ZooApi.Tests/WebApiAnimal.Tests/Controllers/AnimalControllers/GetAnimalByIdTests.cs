@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+﻿using ApplicationAnimal.Common.Interfaces;
+using AutoMapper;
 using DomainAnimal.Entities;
-using DomainAnimal.Interfaces;
 using FluentAssertions;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;

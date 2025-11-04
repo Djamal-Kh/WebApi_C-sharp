@@ -19,7 +19,4 @@
   <ItemGroup>
     <ProjectReference Include="..\DomainAnimal\DomainAnimal.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DTO\" />
-  </ItemGroup>
 </Project>

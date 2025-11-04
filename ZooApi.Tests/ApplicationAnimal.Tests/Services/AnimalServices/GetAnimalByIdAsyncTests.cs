@@ -1,7 +1,7 @@
-﻿using ApplicationAnimal.Services;
+﻿using ApplicationAnimal.Common.Interfaces;
+using ApplicationAnimal.Services;
 using Castle.Core.Logging;
 using DomainAnimal.Entities;
-using DomainAnimal.Interfaces;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;

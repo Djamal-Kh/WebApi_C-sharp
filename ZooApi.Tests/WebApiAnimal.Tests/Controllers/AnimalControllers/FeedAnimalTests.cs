@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using DomainAnimal.Interfaces;
+﻿using ApplicationAnimal.Common.Interfaces;
+using AutoMapper;
 using FluentAssertions;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;

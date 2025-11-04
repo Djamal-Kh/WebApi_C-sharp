@@ -1,5 +1,5 @@
-﻿using DomainAnimal.Entities;
-using DomainAnimal.Interfaces;
+﻿using ApplicationAnimal.Common.Interfaces;
+using DomainAnimal.Entities;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
 
