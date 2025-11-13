@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DomainAnimal.Entities;
+using WebApiAnimal.DTO;
 using ZooApi.DTO;
 
 namespace ZooApi.Mapping
@@ -8,7 +9,8 @@ namespace ZooApi.Mapping
     {
         public AnimalProfile()
         {
-            CreateMap<Animal, AnimalDto>();
+            CreateMap<Animal, AnimalResponseDto>();
+            CreateMap<Animal, CreateAnimalResponseDto>();
         }
     }
 

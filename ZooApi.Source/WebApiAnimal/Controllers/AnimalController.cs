@@ -15,10 +15,10 @@ namespace ZooApi.Controllers
     {
         private readonly IAnimalService _animalService;
         private readonly IMapper _mapper;
-        private readonly IValidator<CreateAnimalDto> _createAnimalValidator;
+        private readonly IValidator<CreateAnimalRequestDto> _createAnimalValidator;
         private readonly ILogger<AnimalController> _logger;
 
-        public AnimalController(ILogger<AnimalController> logger, IAnimalService animalService, IMapper mapper, IValidator<CreateAnimalDto> createvAnimalValidator)
+        public AnimalController(ILogger<AnimalController> logger, IAnimalService animalService, IMapper mapper, IValidator<CreateAnimalRequestDto> createvAnimalValidator)
         {
             _animalService = animalService;
             _mapper = mapper;
@@ -27,14 +27,14 @@ namespace ZooApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAnimalAsync([FromBody] CreateAnimalDto dto)
+        public async Task<IActionResult> CreateAnimalAsync([FromBody] CreateAnimalRequestDto dto)
         {
             _logger.LogInformation("Start Http POST (Animal). InputData: Type:{TypeOfAnimal} Name:{NameOfAnimal}", dto.Type, dto.Name);
 
-            var validatorCreate = await _createAnimalValidator.ValidateAsync(dto);
-            if (!validatorCreate.IsValid)
+            var createValidator = await _createAnimalValidator.ValidateAsync(dto);
+            if (!createValidator.IsValid)
             {
-                var validationErrors = validatorCreate.Errors
+                var validationErrors = createValidator.Errors
                     .Select(x => new ValidationErrorDto { AttemptedValue = x.AttemptedValue, ErrorMessage = x.ErrorMessage});
 
                 _logger.LogWarning("Http POST (Animal) failed. Validation is FAILED: {Validation}", validationErrors);
@@ -47,26 +47,27 @@ namespace ZooApi.Controllers
                 return BadRequest(result.Error);
             }
 
-            Animal createdAnimal = result.Value;
-            var createdAnimalDto = _mapper.Map<AnimalDto>(createdAnimal);
+            Animal animal = result.Value;
+
+            var animalDto = _mapper.Map<CreateAnimalResponseDto>(animal);
 
             _logger.LogInformation("Http POST (Animal) success. Property added object: Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", 
-                createdAnimalDto.Id, createdAnimalDto.Name, createdAnimalDto.Type);
+                animalDto.Id, animalDto.Name, animalDto.Type);
 
             return Created(
-                $"/api/animal/{createdAnimalDto.Id}",
-                createdAnimalDto);
+                $"/api/animal/{animalDto.Id}",
+                animalDto);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAnimalsAsync()
         {
-            _logger.LogInformation("Start Http GET (return list animals)");
+            _logger.LogInformation("Start Http GET (return list of animals)");
 
             var result = await _animalService.GetAllAnimalsAsync();
 
             List<Animal> animals = result.Value;
-            var animalsDtos = _mapper.Map<List<AnimalDto>>(animals);
+            var animalsDtos = _mapper.Map<List<AnimalResponseDto>>(animals);
 
             _logger.LogInformation("GET (Animals) Success. Общее количество животных = {AnimalCount}",
                 animals.Count);
@@ -86,9 +87,10 @@ namespace ZooApi.Controllers
             } 
 
             Animal animal = result.Value;    
-            var animalDto = _mapper.Map<AnimalDto>(animal);
+            var animalDto = _mapper.Map<AnimalResponseDto>(animal);
 
-            _logger.LogInformation("Http Get (Animal) Success. Property found Animal: Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}",
+            _logger.LogInformation("Http Get (Animal) Success. Property found Animal: " +
+                "Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}",
                 animalDto.Id, animalDto.Name, animalDto.Type);
             return Ok(animalDto);
         }

@@ -37,7 +37,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
             //Arrange
             var createdAnimal = new Lion(name);
             var createAnimalDto = new CreateAnimalDto { Name = name, Type = type };
-            var expectedDto = new AnimalDto { Name = name, Type = type };
+            var expectedDto = new AnimalResponseDto { Name = name, Type = type };
             var validationResult = new ValidationResult(); // Success validation
 
             _mockCreateAnimalDtoValidator
@@ -49,7 +49,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
                 .ReturnsAsync(createdAnimal);
 
             _mockMapper
-                .Setup(m => m.Map<AnimalDto>(createdAnimal))
+                .Setup(m => m.Map<AnimalResponseDto>(createdAnimal))
                 .Returns(expectedDto);
 
             var controller = new AnimalController(
@@ -68,7 +68,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
             okResult.Should().BeOfType<OkObjectResult>();
             okResult.StatusCode.Should().Be(200);
 
-            var animalResult = okResult.Value as AnimalDto;
+            var animalResult = okResult.Value as AnimalResponseDto;
             animalResult.Should().NotBeNull();
             animalResult.Name.Should().Be(name);
             animalResult.Type.Should().Be(type);

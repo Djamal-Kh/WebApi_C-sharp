@@ -38,14 +38,14 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
                 new Monkey {Id = 2, Name = "TestMonkey"}
             };
 
-            var expectedDto = new List<AnimalDto>
+            var expectedDto = new List<AnimalResponseDto>
             {
-                new AnimalDto {Id = 1, Name = "TestLion", Type = AnimalType.Lion},
-                new AnimalDto {Id = 2, Name = "TestMonkey", Type = AnimalType.Monkey}
+                new AnimalResponseDto {Id = 1, Name = "TestLion", Type = AnimalType.Lion},
+                new AnimalResponseDto {Id = 2, Name = "TestMonkey", Type = AnimalType.Monkey}
             };
 
             _mockMapper
-                .Setup(m => m.Map<List<AnimalDto>>(expectedAnimals))
+                .Setup(m => m.Map<List<AnimalResponseDto>>(expectedAnimals))
                 .Returns(expectedDto);
 
             _mockAnimalService
@@ -66,7 +66,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
             OkResult.Should().NotBeNull();
             OkResult.Should().BeOfType<OkObjectResult>();
 
-            var returnedDto = OkResult.Value as List<AnimalDto>;
+            var returnedDto = OkResult.Value as List<AnimalResponseDto>;
             returnedDto.Should().NotBeNull();
             returnedDto.Should().HaveCount(expectedAnimals.Count);
 

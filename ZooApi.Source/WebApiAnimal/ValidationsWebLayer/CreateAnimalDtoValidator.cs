@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace ZooApi.Validations
 {
-    public class CreateAnimalDtoValidator : AbstractValidator<CreateAnimalDto>
+    public class CreateAnimalDtoValidator : AbstractValidator<CreateAnimalRequestDto>
     {
         public CreateAnimalDtoValidator()
         {

@@ -44,7 +44,7 @@ builder.Services.AddHostedService<DecrementAnimalEnergyAsync>();
 
 builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
-builder.Services.AddScoped<IValidator<CreateAnimalDto>, CreateAnimalDtoValidator>();
+builder.Services.AddScoped<IValidator<CreateAnimalRequestDto>, CreateAnimalDtoValidator>();
 builder.Services.AddScoped<CacheAttribute>();
 
 builder.Services.AddDbContext<AppContextDB>(

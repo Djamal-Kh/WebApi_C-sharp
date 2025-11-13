@@ -32,10 +32,10 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
         {
             //Arrange
             var lion = new Lion("TestLion");
-            var expectedDto = new AnimalDto { Id = lion.Id, Name = "TestLion" };
+            var expectedDto = new AnimalResponseDto { Id = lion.Id, Name = "TestLion" };
 
             _mockMapper
-                .Setup(m => m.Map<AnimalDto>(lion))
+                .Setup(m => m.Map<AnimalResponseDto>(lion))
                 .Returns(expectedDto);
 
             _mockAnimalService
@@ -57,7 +57,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
             okResult.Should().BeOfType<OkObjectResult>();
             okResult.StatusCode.Should().Be(200);
 
-            var returnedDto = okResult.Value as AnimalDto;
+            var returnedDto = okResult.Value as AnimalResponseDto;
             returnedDto.Should().NotBeNull();
             returnedDto.Id.Should().Be(lion.Id);
             returnedDto.Name.Should().Be(lion.Name);
