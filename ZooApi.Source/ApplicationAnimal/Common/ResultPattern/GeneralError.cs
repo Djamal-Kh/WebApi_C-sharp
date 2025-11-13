@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ApplicationAnimal.Common.ResultPattern;
+public static class GeneralErrors
+{
+    public static Error ValueIsInvalid(string? name = null)
+    {
+        string label = name ?? "значение";
+        return Error.Validation("value.is.invalid", $"{label} недействительно");
+    }
+
+    public static Error NotFound(int? id = null)
+    {
+        string forId = id == null ? string.Empty : $" по Id '{id}'";
+        return Error.NotFound("record.not.found", $"запись не найдена{forId}");
+    }
+
+    public static Error CollectionEmpty()
+    {
+        return Error.NotFound("record.not.found", "ни одна запись не найдена");
+    }
+
+    public static Error ValueIsRequired(string? name = null)
+    {
+        string label = name == null ? string.Empty : " " + name + " ";
+        return Error.Validation("length.is.invalid", $"Поле{label}обязательно");
+    }
+
+    public static Error Failure(string? message = null)
+    {
+        return Error.Failure("server.failure", message ?? "Серверная ошибка");
+    }
+
+    public static Error ValueAlreadyExists(string? name = null)
+    {
+        string label = name ?? "значение";
+        return Error.Validation("value.already.exists", $"{label} уже существует");
+    }
+
+    public static Error DuplicateValues(string? name = null)
+    {
+        string label = name ?? "коллекции";
+        return Error.Validation("duplicate.values", $"В {label} значения дублируются");
+    }
+}

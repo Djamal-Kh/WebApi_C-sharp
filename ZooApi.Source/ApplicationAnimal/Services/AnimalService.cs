@@ -1,5 +1,6 @@
 ﻿using ApplicationAnimal.Common.Interfaces;
 using ApplicationAnimal.Common.ResultPattern;
+using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using DomainAnimal.Factories;
 using Microsoft.Extensions.Logging;
@@ -20,50 +21,70 @@ namespace ApplicationAnimal.Services
             _animalRepository = animalRepository;
         }
 
-        public async Task<Result<Animal>> CreateAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
+        public async Task<Result<Animal, Errors>> CreateAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Try add Animal with Name: {Name}", nameOfAnimal);
+
             bool existsName = await _animalRepository.ExistsByName(nameOfAnimal, cancellationToken);
             if (existsName)
             {
                 _logger.LogWarning("Attempt to create an animal with Name: {Name} is failed !", nameOfAnimal);
-                return Result<Animal>.Failure(new Error("Already exists with this name", "BadRequest"));
+                return GeneralErrors.ValueAlreadyExists(nameOfAnimal).ToErrors();
             }
 
             Animal newAnimal = AnimalFactory.Create(animalType, nameOfAnimal);
             await _animalRepository.CreateAnimalAsync(newAnimal, cancellationToken);
-            return Result<Animal>.Success(newAnimal);
+
+            return newAnimal;
         }
 
-        public async Task<List<Animal>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
+        public async Task<Result<List<Animal>, Errors>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
         {
             var animals = await _animalRepository.GetAllAnimalsAsync(cancellationToken);
-            if(!animals.Any())
-            {
-                _logger.LogWarning("No animals in the Database !");
-                throw new SqlNullValueException();
-            }
-
 
             return animals;
         }
 
-        public async Task<Animal> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (result.IsFailure)
+            {
+                return GeneralErrors.NotFound(id).ToErrors();
+            }
+
+            var animal = result.Value;
+
+            return animal;
         }
 
-        public async Task<string> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (result.IsFailure)
+            {
+                return GeneralErrors.NotFound(id).ToErrors();
+            }
+
+            var animal = result.Value;  
+
             var feedingResult = await _animalRepository.FeedAnimalAsync(animal, cancellationToken);
+
             return feedingResult;
         }
 
-        public async Task<string> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<string, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (result.IsFailure)
+            {
+                return GeneralErrors.NotFound(id).ToErrors();
+            }
+
+            var animal = result.Value;
+
             await _animalRepository.DeleteAnimalAsync(animal, cancellationToken);
+
             return $"Животное с id = {id} было удалено";
         }
     }

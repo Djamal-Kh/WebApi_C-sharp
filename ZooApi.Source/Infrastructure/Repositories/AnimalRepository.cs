@@ -1,4 +1,6 @@
 ﻿using ApplicationAnimal.Common.Interfaces;
+using ApplicationAnimal.Common.ResultPattern;
+using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +21,13 @@ namespace Infrastructure.Repositories
             return await context.Animals.OrderBy(a => a.Id).ToListAsync();
         }
 
-        public async Task<Animal> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var animal = await context.Animals.FindAsync(id);
             if (animal == null)
-                throw new KeyNotFoundException();
+            {
+                return GeneralErrors.NotFound(id).ToErrors();
+            }
             return animal;
         }
 

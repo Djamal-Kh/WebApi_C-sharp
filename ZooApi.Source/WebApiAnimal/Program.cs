@@ -1,3 +1,4 @@
+global using CSharpFunctionalExtensions;
 using ApplicationAnimal.BackgroundServ;
 using ApplicationAnimal.Common.Interfaces;
 using ApplicationAnimal.Services;
