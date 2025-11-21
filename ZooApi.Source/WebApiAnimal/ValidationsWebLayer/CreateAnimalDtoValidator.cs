@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace ZooApi.Validations
 {
-    public class CreateAnimalDtoValidator : AbstractValidator<CreateAnimalRequestDto>
+    public class AddAnimalDtoValidator : AbstractValidator<AddAnimalRequestDto>
     {
-        public CreateAnimalDtoValidator()
+        public AddAnimalDtoValidator()
         {
             RuleFor(x => x.Name)
                 .NotNull().WithMessage("Поле \"name\" не должно быть пустым")

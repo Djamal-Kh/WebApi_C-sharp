@@ -21,7 +21,7 @@ namespace WebApiAnimal.Filters
 
             if (cache.TryGetValue(cacheKey, out var cachResult))
             {
-                _logger.LogInformation("Данные взяты из кэша");
+                _logger.LogInformation("Data taken from cache");
                 context.Result = (IActionResult)cachResult;
                 return;
             }
@@ -30,7 +30,7 @@ namespace WebApiAnimal.Filters
 
             if (executedContext.Result is OkObjectResult result)
             {
-                _logger.LogInformation("Добавление данных в кэш");
+                _logger.LogInformation("Adding data to cache");
                 cache.Set(cacheKey, result, TimeSpan.FromSeconds(DurationSeconds));
             }
         }

@@ -32,12 +32,7 @@ namespace Infrastructure.ContextsDb
             modelBuilder
                 .Entity<Animal>()
                 .Property(x => x.Energy)
-                .HasColumnName("EnergyOfAnimal");
-
-            modelBuilder
-                .Entity<Animal>()
-                .Property(x => x.Type)
-                .HasConversion<string>();
+                .HasColumnName("Energy");
 
             modelBuilder
                 .Entity<Animal>()
@@ -56,7 +51,7 @@ namespace Infrastructure.ContextsDb
             // Настройка модели (таблицы в БД) сотрудников
             modelBuilder
                 .Entity<Employee>()
-                .ToTable("EmployeesOfZoo");
+                .ToTable("Employees");
 
             modelBuilder
                 .Entity<Employee>()

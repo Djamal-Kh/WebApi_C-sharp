@@ -10,7 +10,7 @@ namespace ZooApi.Mapping
         public AnimalProfile()
         {
             CreateMap<Animal, AnimalResponseDto>();
-            CreateMap<Animal, CreateAnimalResponseDto>();
+            CreateMap<Animal, AddAnimalResponseDto>();
         }
     }
 

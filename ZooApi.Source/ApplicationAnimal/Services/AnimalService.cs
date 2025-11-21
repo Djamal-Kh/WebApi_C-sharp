@@ -4,8 +4,6 @@ using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using DomainAnimal.Factories;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
-using System.Data.SqlTypes;
 
 namespace ApplicationAnimal.Services
 {
@@ -21,19 +19,19 @@ namespace ApplicationAnimal.Services
             _animalRepository = animalRepository;
         }
 
-        public async Task<Result<Animal, Errors>> CreateAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
+        public async Task<Result<Animal, Errors>> AddAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Try add Animal with Name: {Name}", nameOfAnimal);
 
-            bool existsName = await _animalRepository.ExistsByName(nameOfAnimal, cancellationToken);
-            if (existsName)
+            bool isDuplicateName = await _animalRepository.isDuplicateNameAsync(nameOfAnimal, cancellationToken);
+            if (isDuplicateName)
             {
                 _logger.LogWarning("Attempt to create an animal with Name: {Name} is failed !", nameOfAnimal);
                 return GeneralErrors.ValueAlreadyExists(nameOfAnimal).ToErrors();
             }
 
             Animal newAnimal = AnimalFactory.Create(animalType, nameOfAnimal);
-            await _animalRepository.CreateAnimalAsync(newAnimal, cancellationToken);
+            await _animalRepository.AddAnimalAsync(newAnimal, cancellationToken);
 
             return newAnimal;
         }
@@ -60,15 +58,10 @@ namespace ApplicationAnimal.Services
 
         public async Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
-            if (result.IsFailure)
-            {
+            var feedingResult = await _animalRepository.FeedAnimalAsync(id, cancellationToken);
+
+            if (feedingResult.IsFailure) 
                 return GeneralErrors.NotFound(id).ToErrors();
-            }
-
-            var animal = result.Value;  
-
-            var feedingResult = await _animalRepository.FeedAnimalAsync(animal, cancellationToken);
 
             return feedingResult;
         }

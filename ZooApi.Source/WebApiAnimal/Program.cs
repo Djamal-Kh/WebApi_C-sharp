@@ -44,7 +44,7 @@ builder.Services.AddHostedService<DecrementAnimalEnergyAsync>();
 
 builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
-builder.Services.AddScoped<IValidator<CreateAnimalRequestDto>, CreateAnimalDtoValidator>();
+builder.Services.AddScoped<IValidator<AddAnimalRequestDto>, AddAnimalDtoValidator>();
 builder.Services.AddScoped<CacheAttribute>();
 
 builder.Services.AddDbContext<AppContextDB>(
@@ -54,7 +54,6 @@ builder.Services.AddDbContext<AppContextDB>(
     });
 
 var app = builder.Build();
-app.UseExceptionHandlingMiddleware();
 
 using var scope = app.Services.CreateScope();
 var db = scope.ServiceProvider.GetRequiredService<AppContextDB>();
@@ -62,6 +61,7 @@ await db.Database.MigrateAsync();
 
 Log.Information("Application ZooApi starting up");
 
+app.UseExceptionHandlingMiddleware();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();

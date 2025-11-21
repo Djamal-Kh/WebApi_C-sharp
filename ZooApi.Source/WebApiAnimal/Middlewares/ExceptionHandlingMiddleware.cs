@@ -28,19 +28,19 @@ namespace ZooApi.Middlewares
 
             catch (ArgumentOutOfRangeException ex)
             {
-                _logger.LogError($"Значение вне диапозона допустимых значений: {ex.Message}");
+                _logger.LogError($"Argument out of Range: {ex.Message}");
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.InternalServerError, "Argument out of Range");
             }
 
             catch (ArgumentException ex)
             {
-                _logger.LogError("Перехвачено исключение ArgumentException: {exception}", ex);
+                _logger.LogError("Invalid Data. ArgumentException: {exception}", ex);
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.BadRequest, "Invalid input data! The animal species field is filled in incorrectly");
             }
 
             catch (NpgsqlException ex)
             {
-                _logger.LogError("Что-то случилось с PostgreSql", ex);
+                _logger.LogError("Problems with PostgreSql: {ex}", ex);
                 await HandleExceptionAsync(httpContext, ex.Message, HttpStatusCode.ServiceUnavailable, "Invalid input data! The animal species field is filled in incorrectly");
             }
 
