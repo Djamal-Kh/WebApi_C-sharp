@@ -1,4 +1,4 @@
-﻿using ApplicationAnimal.Common.Interfaces;
+﻿using ApplicationAnimal.Common.Abstractions.Animals;
 using ApplicationAnimal.Common.ResultPattern;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
@@ -76,6 +76,16 @@ namespace Infrastructure.Repositories
         public async Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default)
         {
             await context.Animals.Where(E => E.Energy > 0 && E.Energy >= decrementValue).ExecuteUpdateAsync(x => x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
+        }
+
+        public async Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

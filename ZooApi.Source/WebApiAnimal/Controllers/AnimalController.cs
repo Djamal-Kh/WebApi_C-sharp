@@ -4,8 +4,8 @@ using ZooApi.DTO;
 using FluentValidation;
 using WebApiAnimal.Filters;
 using WebApiAnimal.DTO;
-using ApplicationAnimal.Common.Interfaces;
 using DomainAnimal.Entities;
+using ApplicationAnimal.Common.Abstractions.Animals;
 
 namespace ZooApi.Controllers
 {
@@ -107,6 +107,18 @@ namespace ZooApi.Controllers
                 animalDto.Id, animalDto.Name, animalDto.Type);
 
             return Ok(animalDto);
+        }
+
+        [HttpGet]
+        Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default) // новое
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default) // новое
+        {
+            throw new NotImplementedException();
         }
 
         [HttpPatch("{animalId}")]

@@ -14,10 +14,12 @@ namespace ZooApi.Validations
 
             RuleFor(x => x.Name)
                 .Length(2, 20).WithMessage("Имя должно содержать не менее 2 и не более 20 символов")
-                .Must(name => Regex.IsMatch(name, @"^[a-zA-Zа-яА-Я\s]+$")).WithMessage("Не используйте в имени специальные знаки и числа").When(x => !string.IsNullOrWhiteSpace(x.Name)); ;
+                .Must(name => Regex.IsMatch(name, @"^[a-zA-Zа-яА-Я\s]+$"))
+                    .WithMessage("Не используйте в имени специальные знаки и числа")
+                    .When(x => !string.IsNullOrWhiteSpace(x.Name)); ;
 
             RuleFor(x => x.Type)
-                .NotNull().WithMessage("Поле \"type\" не должно быть пустым");
+                .NotNull().WithMessage("Поле \"Type\" не должно быть пустым");
         }
     }
 }

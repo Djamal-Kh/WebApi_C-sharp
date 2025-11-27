@@ -1,5 +1,5 @@
-﻿using ApplicationAnimal.Common.Interfaces;
-using ApplicationAnimal.Services;
+﻿using ApplicationAnimal.Common.Abstractions.Animals;
+using ApplicationAnimal.Services.Animals;
 using DomainAnimal.Entities;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

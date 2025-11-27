@@ -1,11 +1,11 @@
-﻿using ApplicationAnimal.Common.Interfaces;
+﻿using ApplicationAnimal.Common.Abstractions.Animals;
 using ApplicationAnimal.Common.ResultPattern;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using DomainAnimal.Factories;
 using Microsoft.Extensions.Logging;
 
-namespace ApplicationAnimal.Services
+namespace ApplicationAnimal.Services.Animals
 {
 
     public sealed class AnimalService : IAnimalService

@@ -1,4 +1,4 @@
-﻿using ApplicationAnimal.Common.Interfaces;
+﻿using ApplicationAnimal.Common.Abstractions.Animals;
 using AutoMapper;
 using DomainAnimal.Entities;
 using FluentAssertions;

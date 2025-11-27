@@ -20,4 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DomainAnimal\DomainAnimal.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\Employees\Queries\" />
+  </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 using DomainAnimal.Entities;
 using CSharpFunctionalExtensions;
 
-namespace ApplicationAnimal.Common.Interfaces
+namespace ApplicationAnimal.Common.Abstractions.Animals
 {
     public interface IAnimalService
     {
