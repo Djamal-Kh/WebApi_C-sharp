@@ -7,7 +7,6 @@ using Infrastructure.ContextsDb;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Configuration;
 using Serilog;
 using WebApiAnimal.Filters;
 using ZooApi.DTO;

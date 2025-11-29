@@ -13,9 +13,9 @@ namespace DomainAnimal.Entities
     public abstract class Animal : IAnimal
     {
         protected const int MaxEnergy = 100;
+
         [Key]
         public int Id { get; protected set; }
-
         [NotMapped]
         public AnimalType Type { get; protected set; }
         public string Name { get; protected set; }
@@ -26,7 +26,6 @@ namespace DomainAnimal.Entities
 
         // конструктор без параметров для EF Core
         protected Animal() { }
-
         protected Animal(AnimalType type, string name, int energy)
         {
             if(string.IsNullOrWhiteSpace(name))

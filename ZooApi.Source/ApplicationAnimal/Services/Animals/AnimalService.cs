@@ -65,13 +65,10 @@ namespace ApplicationAnimal.Services.Animals
 
         public async Task<Result<string, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
-            if (animal is null)
-            {
-                return GeneralErrors.NotFound(id).ToErrors();
-            }
+            var result = await _animalRepository.DeleteAnimalAsync(id, cancellationToken);
 
-            await _animalRepository.DeleteAnimalAsync(animal, cancellationToken);
+            if(result.IsFailure)
+                return GeneralErrors.NotFound(id).ToErrors();
 
             return $"The animal with {id} was removed";
         }

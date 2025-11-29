@@ -6,6 +6,7 @@ using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
 
 using Npgsql;
+using System.Data.Common;
 
 namespace Infrastructure.Repositories
 {
@@ -36,51 +37,57 @@ namespace Infrastructure.Repositories
         {
             await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
             {
-                var animal = await context.Animals
+                try
+                {
+                    var animal = await context.Animals
                     .FromSqlRaw(
                     "Select * FROM \"AnimalsOfZoo\" WHERE \"Id\" = {0} FOR NO KEY UPDATE", id
                     )
                     .AsTracking()
                     .FirstOrDefaultAsync(cancellationToken);
 
-                if (animal is null)
-                    return GeneralErrors.NotFound(id).ToErrors();
+                    if (animal is null)
+                        return GeneralErrors.NotFound(id).ToErrors();
 
-                string feedingResult = animal.Eat();
+                    string feedingResult = animal.Eat();
 
-                await context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
 
-                await transaction.CommitAsync();
+                    await transaction.CommitAsync();
 
-                return feedingResult;
+                    return feedingResult;
+                }
+
+                catch(Exception)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    throw;
+                }
             }
         }
 
-        public async Task DeleteAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
+        public async Task<Result<bool, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            context.Animals.Remove(animal);
-            await context.SaveChangesAsync();
+            var deleteAnimal = await context.Animals
+                .Where(a => a.Id == id)
+                .ExecuteDeleteAsync();
+
+            if (deleteAnimal == 0)
+                return GeneralErrors.NotFound().ToErrors();
+
+            return true;
         }
 
         public async Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default)
         {
             bool exist = await context.Animals.AnyAsync(n => n.Name == name);
+
             return exist;
         }
 
         public async Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default)
         {
             await context.Animals.Where(E => E.Energy > 0 && E.Energy >= decrementValue).ExecuteUpdateAsync(x => x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
-        }
-
-        public async Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
     }
 }

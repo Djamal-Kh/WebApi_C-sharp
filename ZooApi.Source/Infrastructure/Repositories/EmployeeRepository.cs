@@ -12,57 +12,57 @@ namespace Infrastructure.Repositories
 {
     public sealed class EmployeeRepository : IEmployeeRepository
     {
-        public async Task AddEmployeeAsync(Employee employee, CancellationToken cancellationToken)
+        public Task AddEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task AssignAnimalToEmployee(CancellationToken cancellation)
+        public Task AssignAnimalToEmployee(CancellationToken cancellation)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<string, Errors>> DeleteEmployee(int employeeId, CancellationToken cancellationToken)
+        public Task<Result<string, Errors>> DeleteEmployee(int employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<string, Errors>> DemotionEmployee(int employeeId, CancellationToken cancellationToken)
+        public Task<Result<string, Errors>> DemotionEmployee(int employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task GetDatetimeSinceLastFeeding(int employeeId, CancellationToken cancellationToken)
+        public Task GetDatetimeSinceLastFeeding(int employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<Employee, Errors>> GetEmployeeByIdAsync(int employeeId, CancellationToken cancellationToken)
+        public Task<Result<Employee, Errors>> GetEmployeeByIdAsync(int employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<Employee>> GetEmployeesAsync(CancellationToken cancellationToken)
+        public Task<List<Employee>> GetEmployeesAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task GetEmployeeWithItsAnimals(int employeeId, CancellationToken cancellationToken)
+        public Task GetEmployeeWithItsAnimals(int employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<Employee>> GetEmployeeWithoutAnimal(CancellationToken cancellationToken, Employee employee)
+        public Task<List<Employee>> GetEmployeeWithoutAnimal(CancellationToken cancellationToken, Employee employee)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<string, Errors>> PromotionEmployee(int employeeId, CancellationToken cancellationToken)
+        public Task<Result<string, Errors>> PromotionEmployee(int employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task RemoveBoundAnimals(int employeeId, CancellationToken cancellationToken)
+        public Task RemoveBoundAnimals(int employeeId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

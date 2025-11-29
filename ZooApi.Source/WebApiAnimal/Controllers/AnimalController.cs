@@ -87,7 +87,10 @@ namespace ZooApi.Controllers
         }
 
         [HttpGet("{animalId}")]
-        [ServiceFilter(typeof(CacheAttribute))]
+        /* Не знаю как, но оно работает - надо будет разобраться !!!
+         * Очень любопытно как компилятор (или это рефлексия?) понимает 
+         * в какой параметр аргумента кэша вставлять аргумент */
+        [TypeFilter(typeof(CacheAttribute), Arguments = [10])]
         public async Task<IActionResult> GetAnimalByIdAsync([FromRoute(Name = "animalId")] int id)
         {
             _logger.LogInformation("Try to return the animal. InputData: Id = {Id}", id);
@@ -109,17 +112,6 @@ namespace ZooApi.Controllers
             return Ok(animalDto);
         }
 
-        [HttpGet]
-        Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default) // новое
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet]
-        Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default) // новое
-        {
-            throw new NotImplementedException();
-        }
 
         [HttpPatch("{animalId}")]
         public async Task<IActionResult> FeedAnimalAsync([FromRoute(Name = "animalId")] int id)

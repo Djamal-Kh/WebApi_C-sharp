@@ -4,15 +4,16 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace WebApiAnimal.Filters
 {
-    public class CacheAttribute : ActionFilterAttribute
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+    public sealed class CacheAttribute : ActionFilterAttribute
     {
         private readonly ILogger<CacheAttribute> _logger;
-        public CacheAttribute(ILogger<CacheAttribute> logger)
+        private readonly int DurationSeconds;
+        public CacheAttribute(ILogger<CacheAttribute> logger, int durationSeconds = 30)
         {
             _logger = logger;
+            DurationSeconds = durationSeconds;
         }
-
-        public int DurationSeconds = 30;
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
