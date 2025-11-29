@@ -77,6 +77,9 @@ namespace ZooApi.Controllers
 
             var result = await _animalService.GetAllAnimalsAsync();
 
+            if (result.IsFailure)
+                return Ok(new List<AnimalResponseDto>());
+
             List<Animal> animals = result.Value;
             var animalsDtos = _mapper.Map<List<AnimalResponseDto>>(animals);
 
@@ -109,14 +112,16 @@ namespace ZooApi.Controllers
             return Ok(animalDto);
         }
 
+        // реализовать после реализации этого метода в Application layer
         [HttpGet]
-        Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default) // новое
+        Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
+        // реализовать после реализации этого метода в Application layer
         [HttpGet]
-        Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default) // новое
+        Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

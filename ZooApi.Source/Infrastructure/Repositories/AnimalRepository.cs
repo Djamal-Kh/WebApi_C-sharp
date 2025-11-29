@@ -1,4 +1,5 @@
 ﻿using ApplicationAnimal.Common.Abstractions.Animals;
+using ApplicationAnimal.Common.DTO;
 using ApplicationAnimal.Common.ResultPattern;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
@@ -25,14 +26,26 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Animal?> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var animal = await context.Animals.FindAsync(id);
 
-            if (animal is null)
-                return GeneralErrors.NotFound(id).ToErrors();
-
             return animal;
+        }
+
+        public async Task<List<AnimalTypeCountDto>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
+        {
+            return await context.Animals
+                .GroupBy(t => t.Type)
+                .Select(a => new AnimalTypeCountDto(a.Key, a.Count()))
+                .ToListAsync();
+        }
+
+        public async Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
+        {
+            var ownerlessAnimals = await context.Animals.Where(ei => ei.EmployeeId == null).ToListAsync();
+            var count = ownerlessAnimals.Count; // потом добавить в ответ count чтобы клиент получал и список бесхозных животных и их количество
+            return ownerlessAnimals;
         }
 
         public async Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
@@ -41,7 +54,8 @@ namespace Infrastructure.Repositories
             {
                 var animal = await context.Animals
                     .FromSqlRaw(
-                    "Select * FROM \"AnimalsOfZoo\" WHERE \"Id\" = {0} FOR NO KEY UPDATE", id
+                    "Select * FROM \"AnimalsOfZoo\" WHERE \"Id\" = {0} FOR NO KEY UPDATE"
+                    , id
                     )
                     .AsTracking()
                     .FirstOrDefaultAsync(cancellationToken);
@@ -75,17 +89,9 @@ namespace Infrastructure.Repositories
 
         public async Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default)
         {
-            await context.Animals.Where(E => E.Energy > 0 && E.Energy >= decrementValue).ExecuteUpdateAsync(x => x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
-        }
-
-        public async Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
+            await context.Animals.Where(E => E.Energy > 0 && E.Energy >= decrementValue)
+                .ExecuteUpdateAsync(x => 
+                    x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
         }
     }
 }

@@ -12,15 +12,22 @@ namespace ApplicationAnimal.Services.Employees
     public interface IEmployeeRepository
     {
         Task AddEmployeeAsync(Employee employee, CancellationToken cancellationToken);
+
+        // Вынести в отдельный репозиторий - разделение Common и Queries (2 метода ниже)
         Task<List<Employee>> GetEmployeesAsync(CancellationToken cancellationToken);
         Task<Result<Employee, Errors>> GetEmployeeByIdAsync(int employeeId, CancellationToken cancellationToken);
-        Task AssignAnimalToEmployee(CancellationToken cancellation); // дописать параметры
+
+        Task AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellation); 
+
+        // Вынести в отдельный репозиторий - разделение Common и Queries (3 метода ниже)
         Task<List<Employee>> GetEmployeeWithoutAnimal(CancellationToken cancellationToken, Employee employee);
         Task GetEmployeeWithItsAnimals(int employeeId, CancellationToken cancellationToken); // подумать
         Task GetDatetimeSinceLastFeeding(int employeeId, CancellationToken cancellationToken); // подумать
-        Task<Result<string, Errors>> PromotionEmployee(int employeeId, CancellationToken cancellationToken);
-        Task<Result<string, Errors>> DemotionEmployee(int employeeId, CancellationToken cancellationToken);
-        Task RemoveBoundAnimals(int employeeId, CancellationToken cancellationToken); // дописать параметры и подумать
-        Task<Result<string, Errors>> DeleteEmployee(int employeeId, CancellationToken cancellationToken);
+
+        Task<Result<string, Errors>> PromotionEmployee(Employee employee, CancellationToken cancellationToken);
+        Task<Result<string, Errors>> DemotionEmployee(Employee employee, CancellationToken cancellationToken);
+        Task RemoveAllBoundAnimals(int employeeId, CancellationToken cancellationToken); // дописать параметры и подумать
+        Task RemoveBoundAnimal(int animalId, CancellationToken cancellationToken);
+        Task FireEmployee(int id, CancellationToken cancellationToken);
     }
 }

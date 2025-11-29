@@ -2,6 +2,8 @@
 using ApplicationAnimal.Services.Employees;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
+using Infrastructure.ContextsDb;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,61 +12,84 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public sealed class EmployeeRepository : IEmployeeRepository
+    public sealed class EmployeeRepository(AppContextDB context) : IEmployeeRepository
     {
         public async Task AddEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await context.Employees.AddAsync(employee);
+            await context.SaveChangesAsync();
         }
 
-        public async Task AssignAnimalToEmployee(CancellationToken cancellation)
+        public async Task AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellation)
         {
-            throw new NotImplementedException();
+            await context.Animals
+                .Where(a => a.Id == animalId)
+                .ExecuteUpdateAsync(e =>
+                    e.SetProperty(e => e.EmployeeId, employeeId));
         }
 
-        public async Task<Result<string, Errors>> DeleteEmployee(int employeeId, CancellationToken cancellationToken)
+        public async Task FireEmployee(int id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await context.Animals
+                .Where(e => e.Id == id)
+                .ExecuteDeleteAsync();
         }
 
-        public async Task<Result<string, Errors>> DemotionEmployee(int employeeId, CancellationToken cancellationToken)
+        public async Task<Result<string, Errors>> DemotionEmployee(Employee employee, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            string result = employee.Demotion();
+
+            await context.SaveChangesAsync();
+            return result;
         }
 
         public async Task GetDatetimeSinceLastFeeding(int employeeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
         }
 
         public async Task<Result<Employee, Errors>> GetEmployeeByIdAsync(int employeeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
         }
 
         public async Task<List<Employee>> GetEmployeesAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
+            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
+        } 
 
         public async Task GetEmployeeWithItsAnimals(int employeeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); // Оставить без реализации
         }
 
         public async Task<List<Employee>> GetEmployeeWithoutAnimal(CancellationToken cancellationToken, Employee employee)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
         }
 
-        public async Task<Result<string, Errors>> PromotionEmployee(int employeeId, CancellationToken cancellationToken)
+        public async Task<Result<string, Errors>> PromotionEmployee(Employee employee, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            string result = employee.Promotion();
+
+            await context.SaveChangesAsync(cancellationToken);
+            return result;
         }
 
-        public async Task RemoveBoundAnimals(int employeeId, CancellationToken cancellationToken)
+        public async Task RemoveAllBoundAnimals(int employeeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await context.Animals
+                .Where(ei => ei.EmployeeId == employeeId)
+                .ExecuteUpdateAsync(e =>
+                    e.SetProperty(e => e.EmployeeId, e => null));
+        }
+
+        public async Task RemoveBoundAnimal(int animalId, CancellationToken cancellationToken)
+        {
+            await context.Animals
+                .Where(a => a.Id == animalId)
+                .ExecuteUpdateAsync(e =>
+                    e.SetProperty(e => e.EmployeeId, e => null));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ApplicationAnimal.Common.Abstractions.Animals;
+using ApplicationAnimal.Common.DTO;
 using ApplicationAnimal.Common.ResultPattern;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
@@ -40,20 +41,31 @@ namespace ApplicationAnimal.Services.Animals
         {
             var animals = await _animalRepository.GetAllAnimalsAsync(cancellationToken);
 
+            if (!animals.Any())
+                return GeneralErrors.CollectionEmpty().ToErrors();
+
             return animals;
         }
 
         public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
-            if (result.IsFailure)
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (animal is null)
             {
                 return GeneralErrors.NotFound(id).ToErrors();
             }
 
-            var animal = result.Value;
-
             return animal;
+        }
+
+        public Task<Result<List<AnimalTypeCountDto>, Errors>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<List<Animal>, Errors>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
@@ -68,13 +80,11 @@ namespace ApplicationAnimal.Services.Animals
 
         public async Task<Result<string, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
-            if (result.IsFailure)
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (animal is null)
             {
                 return GeneralErrors.NotFound(id).ToErrors();
             }
-
-            var animal = result.Value;
 
             await _animalRepository.DeleteAnimalAsync(animal, cancellationToken);
 
