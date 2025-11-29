@@ -31,7 +31,7 @@ namespace ZooApi.Controllers
         public async Task<IActionResult> AddAnimalAsync([FromBody] AddAnimalRequestDto dto)
         {
             _logger.LogInformation(
-                "Start adding animal to the database. InputData: Type:{TypeOfAnimal} Name:{NameOfAnimal}",
+                "Try to add animal to the zoo. InputData: Type:{Type} Name:{Name}",
                 dto.Type, dto.Name);
 
             var createValidator = await _addAnimalValidator.ValidateAsync(dto);
@@ -41,7 +41,7 @@ namespace ZooApi.Controllers
                     .Select(x => new ValidationErrorDto { AttemptedValue = x.AttemptedValue, ErrorMessage = x.ErrorMessage});
 
                 _logger.LogWarning(
-                    "Adding animal to the database failed. Validation is FAILED: {Validation}",
+                    "Adding thr animal cancelled. Validation is FAILED: {Validation}",
                     validationErrors);
 
                 return BadRequest(validationErrors);
@@ -51,7 +51,7 @@ namespace ZooApi.Controllers
             if (result.IsFailure)
             {
                 _logger.LogWarning(
-                    "Adding animal to database failed. Incorrect data: {result}",
+                    "Adding the animal cancelled. Incorrect data: {result}",
                     result);
 
                 return BadRequest(result.Error);
@@ -62,7 +62,7 @@ namespace ZooApi.Controllers
             var animalDto = _mapper.Map<AddAnimalResponseDto>(animal);
 
             _logger.LogInformation(
-                "Adding animal to database success. Property added animal: Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}", 
+                "Adding the animal successfully. Property added animal: Id = {Id}, Name = {Name}, Type = {Type}", 
                 animalDto.Id, animalDto.Name, animalDto.Type);
 
             return Created(
@@ -73,14 +73,14 @@ namespace ZooApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAnimalsAsync()
         {
-            _logger.LogInformation("Start GET. Return list of animals");
+            _logger.LogInformation("Return list of animals");
 
             var result = await _animalService.GetAllAnimalsAsync();
 
             List<Animal> animals = result.Value;
             var animalsDtos = _mapper.Map<List<AnimalResponseDto>>(animals);
 
-            _logger.LogInformation("GET Success. Общее количество животных = {AnimalCount}",
+            _logger.LogInformation("Total number of animals = {Count}",
                 animals.Count);
 
             return Ok(animalsDtos);
@@ -90,20 +90,20 @@ namespace ZooApi.Controllers
         [ServiceFilter(typeof(CacheAttribute))]
         public async Task<IActionResult> GetAnimalByIdAsync([FromRoute(Name = "animalId")] int id)
         {
-            _logger.LogInformation("Start GET. Return the animal. InputData: Id = {AnimalId}", id);
+            _logger.LogInformation("Try to return the animal. InputData: Id = {Id}", id);
 
             var result = await _animalService.GetAnimalByIdAsync(id);
             if (result.IsFailure) 
             {
-                _logger.LogWarning("Get animal failed. Not found animal with id {Id}" , id);
+                _logger.LogWarning("Not found animal with id {Id}" , id);
                 return NotFound(result.Error);
             } 
 
             Animal animal = result.Value;    
             var animalDto = _mapper.Map<AnimalResponseDto>(animal);
 
-            _logger.LogInformation("Get animal Success. Property found Animal: " +
-                "Id = {AnimalId}, Name = {AnimalName}, Type = {AnimalType}",
+            _logger.LogInformation("Property founded animal: " +
+                "Id = {Id}, Name = {Name}, Type = {Type}",
                 animalDto.Id, animalDto.Name, animalDto.Type);
 
             return Ok(animalDto);
@@ -124,37 +124,37 @@ namespace ZooApi.Controllers
         [HttpPatch("{animalId}")]
         public async Task<IActionResult> FeedAnimalAsync([FromRoute(Name = "animalId")] int id)
         {
-            _logger.LogInformation("Start Patch - feeding the animal. InputData: Id = {AnimalId}", id);
+            _logger.LogInformation("Try to feed the animal. InputData: Id = {Id}", id);
 
             var result = await _animalService.FeedAnimalAsync(id);
             if (result.IsFailure)
             {
-                _logger.LogWarning("Patch animal failed. Not found animal with id {Id}", id);
+                _logger.LogWarning("Feeding cancelled. Not found animal with id {Id}", id);
                 return NotFound(result.Error);
             }
 
             string feedingMessage = result.Value;
 
-            _logger.LogInformation("PATCH (feeding Animal) success with id {Id} !", id);
+            _logger.LogInformation("Feeding the animal successfully. Id = {Id}", id);
             return Ok(feedingMessage);
         }
 
         [HttpDelete("{animalId}")]
         public async Task<IActionResult> DeleteAnimalAsync([FromRoute(Name = "animalId")] int id)
         {
-            _logger.LogInformation("Start Delete animal. InputData: Id = {AnimalId}", id);
+            _logger.LogInformation("Try to remove animal. InputData: Id = {Id}", id);
 
             var result = await _animalService.DeleteAnimalAsync(id);
 
             if (result.IsFailure)
             {
-                _logger.LogWarning("Delete animal failed. Not found animal with id {Id}" , id);
+                _logger.LogWarning("Removing the animal cancelled. Not found animal with id {Id}" , id);
                 return NotFound(result.Error);
             }
 
            string deleteMessage = result.Value;
 
-            _logger.LogInformation("Delete animal success with Id = {AnimalId}", id);
+            _logger.LogInformation("Removing the animal successfully. Id = {Id}", id);
             return Ok(deleteMessage);
         }
     }

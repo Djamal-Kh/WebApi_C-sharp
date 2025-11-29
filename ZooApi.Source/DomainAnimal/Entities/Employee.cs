@@ -8,7 +8,7 @@ namespace DomainAnimal.Entities
 {
     public enum EnumEmployeePosition
     {
-        Junior,
+        Junior = 1,
         Senior,
         Managers
     }

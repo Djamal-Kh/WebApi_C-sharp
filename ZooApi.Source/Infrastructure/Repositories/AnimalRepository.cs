@@ -25,12 +25,9 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Animal?> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var animal = await context.Animals.FindAsync(id);
-
-            if (animal is null)
-                return GeneralErrors.NotFound(id).ToErrors();
 
             return animal;
         }
@@ -64,8 +61,6 @@ namespace Infrastructure.Repositories
             context.Animals.Remove(animal);
             await context.SaveChangesAsync();
         }
-
-
 
         public async Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default)
         {

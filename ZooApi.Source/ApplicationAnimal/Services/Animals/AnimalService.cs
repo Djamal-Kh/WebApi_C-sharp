@@ -21,12 +21,11 @@ namespace ApplicationAnimal.Services.Animals
 
         public async Task<Result<Animal, Errors>> AddAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("Try add Animal with Name: {Name}", nameOfAnimal);
-
             bool isDuplicateName = await _animalRepository.isDuplicateNameAsync(nameOfAnimal, cancellationToken);
+
             if (isDuplicateName)
             {
-                _logger.LogWarning("Attempt to create an animal with Name: {Name} is failed !", nameOfAnimal);
+                _logger.LogWarning("Attempt to create an animal with Name {Name} is failed: Name duplication !", nameOfAnimal);
                 return GeneralErrors.ValueAlreadyExists(nameOfAnimal).ToErrors();
             }
 
@@ -45,13 +44,11 @@ namespace ApplicationAnimal.Services.Animals
 
         public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
-            if (result.IsFailure)
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (animal is null)
             {
                 return GeneralErrors.NotFound(id).ToErrors();
             }
-
-            var animal = result.Value;
 
             return animal;
         }
@@ -68,17 +65,15 @@ namespace ApplicationAnimal.Services.Animals
 
         public async Task<Result<string, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
-            if (result.IsFailure)
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (animal is null)
             {
                 return GeneralErrors.NotFound(id).ToErrors();
             }
 
-            var animal = result.Value;
-
             await _animalRepository.DeleteAnimalAsync(animal, cancellationToken);
 
-            return $"Животное с id = {id} было удалено";
+            return $"The animal with {id} was removed";
         }
     }
 }

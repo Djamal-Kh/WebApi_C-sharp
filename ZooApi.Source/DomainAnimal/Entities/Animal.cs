@@ -6,7 +6,7 @@ namespace DomainAnimal.Entities
 {
     public enum AnimalType
     {
-        Lion,
+        Lion = 1,
         Monkey,
     }
 

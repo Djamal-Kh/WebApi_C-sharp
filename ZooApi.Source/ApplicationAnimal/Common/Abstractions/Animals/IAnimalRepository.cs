@@ -8,13 +8,10 @@ namespace ApplicationAnimal.Common.Abstractions.Animals
     {
         Task AddAnimalAsync(Animal animal, CancellationToken cancellationToken = default);
         Task<List<Animal>> GetAllAnimalsAsync(CancellationToken cancellationToken = default);
-        Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default);
-        Task<List<Animal>> GetNumberAnimalsByType(CancellationToken cancellationToken = default); // новое
-        Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default); // новое
+        Task<Animal?> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default); // передалть по ТЗ
         Task DeleteAnimalAsync(Animal animal, CancellationToken cancellationToken = default);
         Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default); // унифицировать метод - сделать общим и для животных и для сотрудников
         Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default);
-
     }
 }
