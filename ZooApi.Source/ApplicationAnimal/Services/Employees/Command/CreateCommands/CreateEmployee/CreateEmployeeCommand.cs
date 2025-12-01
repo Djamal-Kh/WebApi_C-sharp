@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Services.Employees.Command.Create
+namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee
 {
     public sealed record CreateEmployeeCommand(CreateEmployeeRequest CreateEmployeeRequest) : ICommand;
 }

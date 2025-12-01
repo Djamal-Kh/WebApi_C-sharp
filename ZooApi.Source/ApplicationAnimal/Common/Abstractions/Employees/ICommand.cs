@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Common.Abstractions.Employees
 {
-    public interface ICommand : IBaseCommand
-    {
-    }
+    public interface ICommand : IBaseCommand;
 
-    public interface ICommand<TResponse> : IBaseCommand
-    {
-    }
+    public interface ICommand<TResponse> : IBaseCommand;
 
-    public interface IBaseCommand 
-    {
-    }
+    public interface IBaseCommand;
 }

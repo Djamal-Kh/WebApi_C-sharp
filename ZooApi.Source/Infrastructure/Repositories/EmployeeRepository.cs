@@ -14,10 +14,20 @@ namespace Infrastructure.Repositories
 {
     public sealed class EmployeeRepository(AppContextDB context) : IEmployeeRepository
     {
-        public async Task AddEmployeeAsync(Employee employee, CancellationToken cancellationToken)
+        public async Task<Result<Employee, Error>> AddEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
-            await context.Employees.AddAsync(employee);
-            await context.SaveChangesAsync();
+            try
+            {
+                await context.Employees.AddAsync(employee);
+                await context.SaveChangesAsync();
+
+                return employee;
+            }
+
+            catch 
+            {
+                return GeneralErrors.ValueIsInvalid();
+            }
         }
 
         public async Task AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellation)

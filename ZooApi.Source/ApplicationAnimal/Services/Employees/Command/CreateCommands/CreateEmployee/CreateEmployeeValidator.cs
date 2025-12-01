@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Services.Employees.Command.Create
+namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee
 {
     public class CreateEmployeeValidator : AbstractValidator<CreateEmployeeCommand>
     {

@@ -9,15 +9,16 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees
 {
+    // Добавь к названию всех методов ASYNC
     public interface IEmployeeRepository
     {
-        Task AddEmployeeAsync(Employee employee, CancellationToken cancellationToken);
+        Task<Result<Employee, Error>> AddEmployeeAsync(Employee employee, CancellationToken cancellationToken);
 
         // Вынести в отдельный репозиторий - разделение Common и Queries (2 метода ниже)
         Task<List<Employee>> GetEmployeesAsync(CancellationToken cancellationToken);
         Task<Result<Employee, Errors>> GetEmployeeByIdAsync(int employeeId, CancellationToken cancellationToken);
 
-        Task AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellation); 
+        Task AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellationToken); 
 
         // Вынести в отдельный репозиторий - разделение Common и Queries (3 метода ниже)
         Task<List<Employee>> GetEmployeeWithoutAnimal(CancellationToken cancellationToken, Employee employee);
