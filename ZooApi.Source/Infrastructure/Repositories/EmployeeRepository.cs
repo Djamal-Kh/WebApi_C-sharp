@@ -14,14 +14,14 @@ namespace Infrastructure.Repositories
 {
     public sealed class EmployeeRepository(AppContextDB context) : IEmployeeRepository
     {
-        public async Task<Result<Employee, Error>> AddEmployeeAsync(Employee employee, CancellationToken cancellationToken)
+        public async Task<Result<int, Error>> AddEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
             try
             {
                 await context.Employees.AddAsync(employee);
                 await context.SaveChangesAsync();
 
-                return employee;
+                return employee.Id;
             }
 
             catch 
@@ -30,27 +30,41 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellation)
+        public async Task<UnitResult<Error>> AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellation)
         {
-            await context.Animals
+            var exists = await context.Animals
                 .Where(a => a.Id == animalId)
                 .ExecuteUpdateAsync(e =>
                     e.SetProperty(e => e.EmployeeId, employeeId));
+
+            if (exists == 0)
+                return GeneralErrors.ValueIsInvalid();
+
+            return UnitResult.Success<Error>();
         }
 
-        public async Task FireEmployee(int id, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> FireEmployee(int id, CancellationToken cancellationToken)
         {
-            await context.Animals
+            var exists = await context.Animals
                 .Where(e => e.Id == id)
                 .ExecuteDeleteAsync();
+
+            if (exists == 0)
+                return GeneralErrors.ValueIsInvalid();
+
+            return UnitResult.Success<Error>();
         }
 
-        public async Task<Result<string, Errors>> DemotionEmployee(Employee employee, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> DemotionEmployee(Employee employee, CancellationToken cancellationToken)
         {
-            string result = employee.Demotion();
+            bool result = employee.Demotion();
 
             await context.SaveChangesAsync();
-            return result;
+            
+            if (!result)
+                return GeneralErrors.ValueIsInvalid();
+
+            return UnitResult.Success<Error>();
         }
 
         public async Task GetDatetimeSinceLastFeeding(int employeeId, CancellationToken cancellationToken)
@@ -78,22 +92,32 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
         }
 
-        public async Task<Result<string, Errors>> PromotionEmployee(Employee employee, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> PromotionEmployee(Employee employee, CancellationToken cancellationToken)
         {
-            string result = employee.Promotion();
+            bool result = employee.Promotion();
 
             await context.SaveChangesAsync(cancellationToken);
-            return result;
+            
+            if (!result)
+                return GeneralErrors.ValueIsInvalid();
+
+            return UnitResult.Success<Error>();
         }
 
-        public async Task RemoveAllBoundAnimals(int employeeId, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> RemoveAllBoundAnimals(int employeeId, CancellationToken cancellationToken)
         {
-            await context.Animals
+            var exists = await context.Animals
                 .Where(ei => ei.EmployeeId == employeeId)
                 .ExecuteUpdateAsync(e =>
                     e.SetProperty(e => e.EmployeeId, e => null));
+
+            if(exists == 0)
+                return GeneralErrors.ValueIsInvalid();
+
+            return UnitResult.Success<Error>();
         }
 
+        // Переместить в AnimalRepository
         public async Task RemoveBoundAnimal(int animalId, CancellationToken cancellationToken)
         {
             await context.Animals

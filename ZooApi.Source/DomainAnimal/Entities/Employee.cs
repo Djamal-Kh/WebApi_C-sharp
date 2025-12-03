@@ -41,22 +41,22 @@ namespace DomainAnimal.Entities
             };
         }
 
-        public string Demotion()
+        public bool Demotion()
         {
             if (Position == EnumEmployeePosition.Junior)
-                return "Нельзя понизить, только уволить !";
+                return false;
 
             Position--;
-            return $"Понижен до {Position}";
+            return true;
         }
 
-        public string Promotion()
+        public bool Promotion()
         {
             if (Position == EnumEmployeePosition.Senior)
-                return "Нельзя повысить, и так максимальная должность !";
+                return false;
 
             Position--;
-            return $"Повышен до {Position}";
+            return true;
         }
     }
 

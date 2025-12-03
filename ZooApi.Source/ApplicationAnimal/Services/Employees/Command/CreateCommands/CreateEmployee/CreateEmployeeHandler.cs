@@ -44,7 +44,7 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
             if (saveEmployee.IsFailure)
                 return GeneralErrors.ValueIsInvalid().ToErrors();
 
-            return saveEmployee.Value.Id;
+            return saveEmployee.Value;
         }
     }
 }
