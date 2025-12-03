@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<UnitResult<Error>> AssignAnimalToEmployee(int employeeId, int animalId, CancellationToken cancellation)
+        public async Task<UnitResult<Error>> AssignAnimalToEmployeeAsync(int employeeId, int animalId, CancellationToken cancellation)
         {
             var exists = await context.Animals
                 .Where(a => a.Id == animalId)
@@ -43,7 +43,7 @@ namespace Infrastructure.Repositories
             return UnitResult.Success<Error>();
         }
 
-        public async Task<UnitResult<Error>> FireEmployee(int id, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> FireEmployeeAsync(int id, CancellationToken cancellationToken)
         {
             var exists = await context.Animals
                 .Where(e => e.Id == id)
@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
             return UnitResult.Success<Error>();
         }
 
-        public async Task<UnitResult<Error>> DemotionEmployee(Employee employee, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> DemotionEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
             bool result = employee.Demotion();
 
@@ -72,9 +72,9 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
         }
 
-        public async Task<Result<Employee, Errors>> GetEmployeeByIdAsync(int employeeId, CancellationToken cancellationToken)
+        public Task<Result<Employee, Errors>> GetEmployeeByIdAsyncInAnimal(int employeeId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
+            throw new NotImplementedException();
         }
 
         public async Task<List<Employee>> GetEmployeesAsync(CancellationToken cancellationToken)
@@ -92,7 +92,7 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
         }
 
-        public async Task<UnitResult<Error>> PromotionEmployee(Employee employee, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> PromotionEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
             bool result = employee.Promotion();
 
@@ -104,7 +104,7 @@ namespace Infrastructure.Repositories
             return UnitResult.Success<Error>();
         }
 
-        public async Task<UnitResult<Error>> RemoveAllBoundAnimals(int employeeId, CancellationToken cancellationToken)
+        public async Task<UnitResult<Error>> RemoveAllBoundAnimalsAsync(int employeeId, CancellationToken cancellationToken)
         {
             var exists = await context.Animals
                 .Where(ei => ei.EmployeeId == employeeId)
@@ -118,12 +118,22 @@ namespace Infrastructure.Repositories
         }
 
         // Переместить в AnimalRepository
-        public async Task RemoveBoundAnimal(int animalId, CancellationToken cancellationToken)
+        public async Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken)
         {
             await context.Animals
                 .Where(a => a.Id == animalId)
                 .ExecuteUpdateAsync(e =>
                     e.SetProperty(e => e.EmployeeId, e => null));
+        }
+
+        public async Task<Result<Employee, Error>> GetByIdAsync(int employeeId, CancellationToken cancellationToken)
+        {
+            var employee = await context.Employees.FindAsync(employeeId, cancellationToken);
+            
+            if (employee == null)
+                return GeneralErrors.NotFound();
+
+            return employee;
         }
     }
 }

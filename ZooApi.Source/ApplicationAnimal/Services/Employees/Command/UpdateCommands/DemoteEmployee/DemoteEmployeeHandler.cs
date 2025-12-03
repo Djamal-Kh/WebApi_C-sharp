@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmployee
 {
-    public sealed class DemoteEmployeeHandler : ICommandHandler<DemoteEmployeeCommand>
+    public sealed class DemoteEmployeeHandler : ICommandHandler<int, DemoteEmployeeCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<DemoteEmployeeHandler> _logger;
@@ -30,16 +30,25 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
         {
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-            if (!validationResult.IsValid)
+
+            var employeeResult = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
+
+            if (employeeResult.IsFailure)
             {
-                throw new NotImplementedException();
+                return GeneralErrors.NotFound().ToErrors();
             }
 
-            // Поменять параметры и ответ у метода в репозитории
-            Employee fakeEmployee = new("Name", EnumEmployeePosition.Middle);
-            var result = await _employeeRepository.DemotionEmployee(fakeEmployee, cancellationToken);
+            Employee employee = employeeResult.Value;
 
-            return -1;
+            var result = await _employeeRepository.DemotionEmployeeAsync(employee, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                _logger.LogError("Ошибка при понижении сотрудника с Id {EmployeeId}: {Error}", command.employeeId, result.Error);
+                return GeneralErrors.Failure("Ошибка при понижении сотрудника").ToErrors();
+            }
+
+            return employee.Id;
         }
     }
 }

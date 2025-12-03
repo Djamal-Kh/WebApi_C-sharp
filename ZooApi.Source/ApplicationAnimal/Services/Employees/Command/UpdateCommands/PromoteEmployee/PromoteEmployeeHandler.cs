@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmployee
 {
-    public sealed class PromoteEmployeeHandler : ICommandHandler<PromoteEmployeeCommand>
+    public sealed class PromoteEmployeeHandler : ICommandHandler<int, PromoteEmployeeCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<PromoteEmployeeHandler> _logger;
@@ -35,10 +35,24 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmp
             }
 
             // Поменять параметры и ответ у метода в репозитории
-            Employee fakeEmployee = new("Name", EnumEmployeePosition.Middle);
-            var result = await _employeeRepository.PromotionEmployee(fakeEmployee, cancellationToken);
+            var employeeResult = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
 
-            return -1;
+            if (employeeResult.IsFailure)
+            {
+                return GeneralErrors.NotFound().ToErrors();
+            }
+
+            Employee employee = employeeResult.Value;
+
+            var result = await _employeeRepository.PromotionEmployeeAsync(employee, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                _logger.LogError("Ошибка при повышении сотрудника с Id {EmployeeId}: {Error}", command.employeeId, result.Error);
+                return GeneralErrors.Failure("Ошибка при повышении сотрудника").ToErrors();
+            }
+
+            return employee.Id;
         }
     }
 }

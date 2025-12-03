@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal
 {
-    public sealed class CreateBoundWithAnimalHandler : ICommandHandler<CreateBoundWithAnimalCommand>
+    public sealed class CreateBoundWithAnimalHandler : ICommandHandler<string, CreateBoundWithAnimalCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<CreateBoundWithAnimalHandler> _logger;
@@ -26,7 +26,7 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
             _validator = validator;
         }
 
-        public async Task<Result<int, Errors>> Handle(CreateBoundWithAnimalCommand command, CancellationToken cancellationToken)
+        public async Task<Result<string, Errors>> Handle(CreateBoundWithAnimalCommand command, CancellationToken cancellationToken)
         {
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
@@ -36,9 +36,12 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
             }
 
             // Пересмотреть метод AssignAnimalToEmployee в репозитории чтобы возвращал Result
-            await _employeeRepository.AssignAnimalToEmployee(command.CreateBoundWithAnimalDto.employeeId, command.CreateBoundWithAnimalDto.animalId, cancellationToken);
+            var result = await _employeeRepository.AssignAnimalToEmployeeAsync(command.CreateBoundWithAnimalDto.employeeId, command.CreateBoundWithAnimalDto.animalId, cancellationToken);
+            
+            if (result.IsFailure)
+                return GeneralErrors.ValueIsInvalid().ToErrors();
 
-            return -1;
+            return $"Employee с id {command.CreateBoundWithAnimalDto.employeeId} успешно привязан к Animal с id {command.CreateBoundWithAnimalDto.animalId}";
         }
     }
 }

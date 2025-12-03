@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Common.Abstractions.Employees
 {
-    public interface ICommandHandler<in TCommand> 
+    public interface ICommandHandler<TResponse, in TCommand> 
         where TCommand : ICommand
     {
-        Task<Result<int, Errors>> Handle(TCommand command, CancellationToken cancellationToken);
+        Task<Result<TResponse, Errors>> Handle(TCommand command, CancellationToken cancellationToken);
     }
 
-    public interface ICommandHandler<in TCommand, TResponse>
-    where TCommand : ICommand<TResponse>
+    public interface ICommandHandler<in TCommand>
+    where TCommand : ICommand
     {
-        Task<Result<TResponse>> Handle(TCommand command, CancellationToken cancellationToken);
+        Task<UnitResult<Errors>> Handle(TCommand command, CancellationToken cancellationToken);
     }
 }

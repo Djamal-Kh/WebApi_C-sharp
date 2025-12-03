@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllBoundAnimals
 {
-    public sealed class RemoveAllBoundAnimalsHandler : ICommandHandler<RemoveAllBoundAnimalsCommand>
+    public sealed class RemoveAllBoundAnimalsHandler : ICommandHandler<int, RemoveAllBoundAnimalsCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<RemoveAllBoundAnimalsHandler> _logger;
@@ -33,8 +33,12 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllB
             }
 
             // Пересмотреть метод RemoveAllBoundAnimals в репозитории чтобы возвращал Result
-            await _employeeRepository.RemoveAllBoundAnimals(command.employeeId, cancellationToken);
-            return -1;
+            var result = await _employeeRepository.RemoveAllBoundAnimalsAsync(command.employeeId, cancellationToken);
+            
+            if (result.IsFailure)
+                return GeneralErrors.ValueIsInvalid().ToErrors();
+
+            return command.employeeId;
         }
     }
 }

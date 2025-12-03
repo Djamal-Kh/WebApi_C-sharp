@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee
 {
-    public sealed class CreateEmployeeHandler : ICommandHandler<CreateEmployeeCommand>
+    public sealed class CreateEmployeeHandler : ICommandHandler<int, CreateEmployeeCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<CreateEmployeeHandler> _logger;

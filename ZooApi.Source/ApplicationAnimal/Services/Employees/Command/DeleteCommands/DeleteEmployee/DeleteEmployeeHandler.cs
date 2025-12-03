@@ -24,7 +24,7 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmpl
             _validator = validator;
         }
 
-        public async Task<Result<int, Errors>> Handle(DeleteEmployeeCommand command, CancellationToken cancellationToken)
+        public async Task<UnitResult<Errors>> Handle(DeleteEmployeeCommand command, CancellationToken cancellationToken)
         {
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
@@ -34,9 +34,12 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmpl
             }
 
             // Удаление сущности из БД - пересмотреть метод в репозитории чтобы возвращал Result
-            await _employeeRepository.FireEmployee(command.employeeId, cancellationToken);
+            var result = await _employeeRepository.FireEmployeeAsync(command.employeeId, cancellationToken);
 
-            return -1;
+            if (result.IsFailure)
+                return GeneralErrors.ValueIsInvalid().ToErrors();
+
+            return UnitResult.Success<Errors>();
         }
     }
 }
