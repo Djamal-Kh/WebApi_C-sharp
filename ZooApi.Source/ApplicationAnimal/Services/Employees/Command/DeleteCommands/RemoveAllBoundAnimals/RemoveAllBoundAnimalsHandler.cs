@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllBoundAnimals
 {
-    public sealed class RemoveAllBoundAnimalsHandler : ICommandHandler<int, RemoveAllBoundAnimalsCommand>
+    public sealed class RemoveAllBoundAnimalsHandler : ICommandHandler<RemoveAllBoundAnimalsCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<RemoveAllBoundAnimalsHandler> _logger;
@@ -24,7 +24,7 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllB
             _validator = validator;
         }
 
-        public async Task<Result<int, Errors>> Handle(RemoveAllBoundAnimalsCommand command, CancellationToken cancellationToken)
+        public async Task<UnitResult<Errors>> Handle(RemoveAllBoundAnimalsCommand command, CancellationToken cancellationToken)
         {
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
             if (!validationResult.IsValid)
@@ -32,13 +32,12 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllB
                 throw new NotImplementedException();
             }
 
-            // Пересмотреть метод RemoveAllBoundAnimals в репозитории чтобы возвращал Result
             var result = await _employeeRepository.RemoveAllBoundAnimalsAsync(command.employeeId, cancellationToken);
             
             if (result.IsFailure)
                 return GeneralErrors.ValueIsInvalid().ToErrors();
 
-            return command.employeeId;
+            return UnitResult.Success<Errors>();
         }
     }
 }

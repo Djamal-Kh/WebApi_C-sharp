@@ -1,5 +1,5 @@
-﻿using ApplicationAnimal.Common.ResultPattern;
-using ApplicationAnimal.Services.Employees;
+﻿using ApplicationAnimal.Common.Abstractions.Employees;
+using ApplicationAnimal.Common.ResultPattern;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using Infrastructure.ContextsDb;

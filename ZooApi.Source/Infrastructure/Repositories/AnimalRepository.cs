@@ -93,5 +93,10 @@ namespace Infrastructure.Repositories
                 .ExecuteUpdateAsync(x => 
                     x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
         }
+
+        public Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -41,6 +41,7 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
 
             // сохранение в БД
             var saveEmployee = await _employeeRepository.AddEmployeeAsync(employee, cancellationToken);
+
             if (saveEmployee.IsFailure)
                 return GeneralErrors.ValueIsInvalid().ToErrors();
 

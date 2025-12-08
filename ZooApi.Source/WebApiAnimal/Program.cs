@@ -1,8 +1,10 @@
 global using CSharpFunctionalExtensions;
 using ApplicationAnimal.BackgroundServ;
+using ApplicationAnimal.Common.Abstractions;
 using ApplicationAnimal.Common.Abstractions.Animals;
 using ApplicationAnimal.Services.Animals;
 using FluentValidation;
+using Infrastructure;
 using Infrastructure.ContextsDb;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.HttpLogging;
@@ -46,6 +48,8 @@ builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
 builder.Services.AddScoped<IValidator<AddAnimalRequestDto>, AddAnimalDtoValidator>();
 builder.Services.AddScoped<CacheAttribute>();
+
+builder.Services.AddSingleton<IDbConnectionFactory, NpsqlConnectionFactory>();
 
 builder.Services.AddDbContext<AppContextDB>(
     options =>

@@ -28,14 +28,12 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
 
         public async Task<Result<string, Errors>> Handle(CreateBoundWithAnimalCommand command, CancellationToken cancellationToken)
         {
-            // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
             if (!validationResult.IsValid)
             {
                 throw new NotImplementedException();
             }
 
-            // Пересмотреть метод AssignAnimalToEmployee в репозитории чтобы возвращал Result
             var result = await _employeeRepository.AssignAnimalToEmployeeAsync(command.CreateBoundWithAnimalDto.employeeId, command.CreateBoundWithAnimalDto.animalId, cancellationToken);
             
             if (result.IsFailure)

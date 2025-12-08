@@ -33,7 +33,6 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmpl
                 throw new NotImplementedException();
             }
 
-            // Удаление сущности из БД - пересмотреть метод в репозитории чтобы возвращал Result
             var result = await _employeeRepository.FireEmployeeAsync(command.employeeId, cancellationToken);
 
             if (result.IsFailure)

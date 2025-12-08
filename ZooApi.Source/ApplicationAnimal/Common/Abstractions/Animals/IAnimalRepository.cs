@@ -16,5 +16,6 @@ namespace ApplicationAnimal.Common.Abstractions.Animals
         Task DeleteAnimalAsync(Animal animal, CancellationToken cancellationToken = default);
         Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default); // унифицировать метод - сделать общим и для животных и для сотрудников
         Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default);
+        Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken = default); 
     }
 }
