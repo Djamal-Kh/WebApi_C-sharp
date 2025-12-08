@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DomainAnimal.Entities
 {
-    public enum AnimalType
+    public enum EnumAnimalType
     {
         Lion = 1,
         Monkey,
@@ -17,7 +17,7 @@ namespace DomainAnimal.Entities
         [Key]
         public int Id { get; protected set; }
         [NotMapped]
-        public AnimalType Type { get; protected set; }
+        public EnumAnimalType Type { get; protected set; }
         public string Name { get; protected set; }
         public int Energy { get; protected set; }
         public Guid SomeSecretInformation { get; private set; }
@@ -26,7 +26,7 @@ namespace DomainAnimal.Entities
 
         // конструктор без параметров для EF Core
         protected Animal() { }
-        protected Animal(AnimalType type, string name, int energy)
+        protected Animal(EnumAnimalType type, string name, int energy)
         {
             if(string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException();
@@ -47,7 +47,7 @@ namespace DomainAnimal.Entities
     {
         private const int LionEnegryGain = 30;
 
-        private Lion(string name, int energy) : base(AnimalType.Lion, name, energy) { }
+        private Lion(string name, int energy) : base(EnumAnimalType.Lion, name, energy) { }
 
         public static Lion Create(string name, int energy)
         {
@@ -81,7 +81,7 @@ namespace DomainAnimal.Entities
     {
         private const int MonkeyEnegryGain = 50;
 
-        private Monkey(string name, int energy) : base(AnimalType.Monkey, name, energy) { }
+        private Monkey(string name, int energy) : base(EnumAnimalType.Monkey, name, energy) { }
 
         public static Monkey Create(string name, int energy)
         {

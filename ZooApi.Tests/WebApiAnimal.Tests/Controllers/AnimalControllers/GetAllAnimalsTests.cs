@@ -40,8 +40,8 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
 
             var expectedDto = new List<AnimalResponseDto>
             {
-                new AnimalResponseDto {Id = 1, Name = "TestLion", Type = AnimalType.Lion},
-                new AnimalResponseDto {Id = 2, Name = "TestMonkey", Type = AnimalType.Monkey}
+                new AnimalResponseDto {Id = 1, Name = "TestLion", Type = EnumAnimalType.Lion},
+                new AnimalResponseDto {Id = 2, Name = "TestMonkey", Type = EnumAnimalType.Monkey}
             };
 
             _mockMapper

@@ -19,7 +19,7 @@ namespace ApplicationAnimal.Services.Animals
             _animalRepository = animalRepository;
         }
 
-        public async Task<Result<Animal, Errors>> AddAnimalAsync(AnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
+        public async Task<Result<Animal, Errors>> AddAnimalAsync(EnumAnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
         {
             bool isDuplicateName = await _animalRepository.isDuplicateNameAsync(nameOfAnimal, cancellationToken);
 

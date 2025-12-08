@@ -30,9 +30,9 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
 
 
         [Theory]
-        [InlineData(AnimalType.Lion, "TestLion")]
-        [InlineData(AnimalType.Monkey, "TestMonkey")]
-        public async Task ShouldAddAnimalsToDb_ReturnOk_WhenCreateSuccess(AnimalType type, string name)
+        [InlineData(EnumAnimalType.Lion, "TestLion")]
+        [InlineData(EnumAnimalType.Monkey, "TestMonkey")]
+        public async Task ShouldAddAnimalsToDb_ReturnOk_WhenCreateSuccess(EnumAnimalType type, string name)
         {
             //Arrange
             var createdAnimal = new Lion(name);
@@ -83,7 +83,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
         public async Task ShouldAddAnimalsToDb_ReturnFailValidaton_WhenCreateFailedOnStepValidation(string propertyName, string errorMessage, string inputData)
         {
             //Arrange
-            var createDto = new CreateAnimalDto { Type = AnimalType.Lion, Name = inputData };
+            var createDto = new CreateAnimalDto { Type = EnumAnimalType.Lion, Name = inputData };
             var validationResult = new ValidationResult(new[]
             {
                 new ValidationFailure(propertyName, errorMessage) 
@@ -126,7 +126,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
         public async Task ShouldAddAnimalsToDb_ReturnArgumentException_WhenNotFoundTypeOfAnimal()
         {
             //Arrange
-            var createDto = new CreateAnimalDto { Name = "TestLion", Type = (AnimalType)999 };
+            var createDto = new CreateAnimalDto { Name = "TestLion", Type = (EnumAnimalType)999 };
             var validationResult = new ValidationResult();
 
             _mockCreateAnimalDtoValidator
@@ -156,7 +156,7 @@ namespace WebApiAnimal.Tests.Controllers.AnimalControllers
         {
             var createDto = new CreateAnimalDto 
             {
-                Name = "TestLion", Type = AnimalType.Lion
+                Name = "TestLion", Type = EnumAnimalType.Lion
             };
 
             var validationResult = new ValidationResult();

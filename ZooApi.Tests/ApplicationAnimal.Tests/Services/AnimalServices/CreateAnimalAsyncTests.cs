@@ -47,7 +47,7 @@ namespace ApplicationAnimal.Tests.Services.AnimalServices
                 _mockLogger.Object);
 
             //Act
-            var result = await service.CreateAnimalAsync(AnimalType.Lion, name);
+            var result = await service.CreateAnimalAsync(EnumAnimalType.Lion, name);
 
             //Assert
             result.Should().NotBeNull();
@@ -59,7 +59,7 @@ namespace ApplicationAnimal.Tests.Services.AnimalServices
         public async Task ShouldAddAnimalsToDb_ReturnArgumentException_WhenNotFoundTypeOfAnimal()
         {
             //Arrange
-            var type = (AnimalType)999;
+            var type = (EnumAnimalType)999;
             var animal = new Lion { Name = "Animal", Type = type };
 
             _mockAnimalRepository
@@ -89,7 +89,7 @@ namespace ApplicationAnimal.Tests.Services.AnimalServices
                 _mockLogger.Object);
 
             //Act & Assert
-            await service.Awaiting(c => c.CreateAnimalAsync(AnimalType.Lion, "Name"))
+            await service.Awaiting(c => c.CreateAnimalAsync(EnumAnimalType.Lion, "Name"))
                 .Should()
                 .ThrowAsync<ValidationException>();
         }

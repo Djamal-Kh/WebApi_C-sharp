@@ -117,9 +117,9 @@ namespace WebApiAnimal.Tests.ValidationsWebLayer
         }
 
         [Theory]
-        [InlineData(AnimalType.Lion)]
-        [InlineData(AnimalType.Monkey)]
-        public void Type_ValidEnumValue_ShouldPass(AnimalType type)
+        [InlineData(EnumAnimalType.Lion)]
+        [InlineData(EnumAnimalType.Monkey)]
+        public void Type_ValidEnumValue_ShouldPass(EnumAnimalType type)
         {
             //Arrange
             var dto = new CreateAnimalDto { Name = "Name", Type = type };
@@ -133,10 +133,10 @@ namespace WebApiAnimal.Tests.ValidationsWebLayer
         }
 
         [Theory]
-        [InlineData (AnimalType.Monkey, "1")]
-        [InlineData(AnimalType.Monkey, "*")]
-        [InlineData (AnimalType.Lion, "So!@#$12345LongNameForLion")]
-        public void MultipleValidationErrors_ShouldReturnAllErrors(AnimalType type, string name)
+        [InlineData (EnumAnimalType.Monkey, "1")]
+        [InlineData(EnumAnimalType.Monkey, "*")]
+        [InlineData (EnumAnimalType.Lion, "So!@#$12345LongNameForLion")]
+        public void MultipleValidationErrors_ShouldReturnAllErrors(EnumAnimalType type, string name)
         {
             //Arrange
             var dto = new CreateAnimalDto { Type = type, Name = name };
@@ -153,11 +153,11 @@ namespace WebApiAnimal.Tests.ValidationsWebLayer
         }
 
         [Theory]
-        [InlineData(AnimalType.Lion, "Lion", true)]
-        [InlineData(AnimalType.Lion, "L", false)]
-        [InlineData(AnimalType.Lion, "Lion1", false)]
-        [InlineData(AnimalType.Lion, "Lion#@", false)]
-        public void Validation_ShouldReturnExpectedIsValid(AnimalType type, string name, bool expectedIdValid)
+        [InlineData(EnumAnimalType.Lion, "Lion", true)]
+        [InlineData(EnumAnimalType.Lion, "L", false)]
+        [InlineData(EnumAnimalType.Lion, "Lion1", false)]
+        [InlineData(EnumAnimalType.Lion, "Lion#@", false)]
+        public void Validation_ShouldReturnExpectedIsValid(EnumAnimalType type, string name, bool expectedIdValid)
         {
             //Arrange
             var dto = new CreateAnimalDto { Name = name, Type = type };
