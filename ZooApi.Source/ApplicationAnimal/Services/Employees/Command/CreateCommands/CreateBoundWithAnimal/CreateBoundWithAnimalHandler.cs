@@ -34,12 +34,12 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
                 throw new NotImplementedException();
             }
 
-            var result = await _employeeRepository.AssignAnimalToEmployeeAsync(command.CreateBoundWithAnimalDto.employeeId, command.CreateBoundWithAnimalDto.animalId, cancellationToken);
+            var result = await _employeeRepository.AssignAnimalToEmployeeAsync(command.employeeId, command.animalId, cancellationToken);
             
             if (result.IsFailure)
                 return GeneralErrors.ValueIsInvalid().ToErrors();
 
-            return $"Employee с id {command.CreateBoundWithAnimalDto.employeeId} успешно привязан к Animal с id {command.CreateBoundWithAnimalDto.animalId}";
+            return $"Employee с id {command.employeeId} успешно привязан к Animal с id {command.animalId}";
         }
     }
 }

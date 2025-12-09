@@ -9,7 +9,7 @@ using ApplicationAnimal.Common.Abstractions.Animals;
 
 namespace ZooApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/animal")]
     [ApiController]
     public sealed class AnimalController : ControllerBase
     {

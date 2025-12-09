@@ -1,5 +1,5 @@
-﻿using ApplicationAnimal.Common.Abstractions.Employees;
-using ApplicationAnimal.Common.ResultPattern;
+﻿using ApplicationAnimal.Common.ResultPattern;
+using ApplicationAnimal.Services.Employees;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using Infrastructure.ContextsDb;
@@ -65,31 +65,6 @@ namespace Infrastructure.Repositories
                 return GeneralErrors.ValueIsInvalid();
 
             return UnitResult.Success<Error>();
-        }
-
-        public async Task GetDatetimeSinceLastFeeding(int employeeId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
-        }
-
-        public Task<Result<Employee, Errors>> GetEmployeeByIdAsyncInAnimal(int employeeId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<Employee>> GetEmployeesAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
-        } 
-
-        public async Task GetEmployeeWithItsAnimals(int employeeId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException(); // Оставить без реализации
-        }
-
-        public async Task<List<Employee>> GetEmployeeWithoutAnimal(CancellationToken cancellationToken, Employee employee)
-        {
-            throw new NotImplementedException(); // Оставить без реализации - реализция отдельно через Dapper
         }
 
         public async Task<UnitResult<Error>> PromotionEmployeeAsync(Employee employee, CancellationToken cancellationToken)

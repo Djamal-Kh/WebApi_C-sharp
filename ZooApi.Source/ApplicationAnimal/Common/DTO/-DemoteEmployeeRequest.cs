@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Common.DTO
 {
-    public sealed record CreateBoundWithAnimalDto(int employeeId, int animalId);
+    public sealed record DemoteEmployeeRequest(int employeeId);
 }
