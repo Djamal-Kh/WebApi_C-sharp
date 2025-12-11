@@ -4,9 +4,9 @@ using Shared.Common.ResultPattern;
 
 namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal
 {
-    public class CreateBoundWithAnimalValidation : AbstractValidator<CreateBoundWithAnimalCommand>
+    public class CreateBoundWithAnimalValidator : AbstractValidator<CreateBoundWithAnimalCommand>
     {
-        public CreateBoundWithAnimalValidation()
+        public CreateBoundWithAnimalValidator()
         {
             RuleFor(command => command.employeeId)
                 .NotEmpty().WithError(GeneralErrors.ValueIsRequired("employeeId"))

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppContextDB))]
-    [Migration("20251029135750_AddTableEmployee")]
-    partial class AddTableEmployee
+    [Migration("20251211161259_AllColumnsToLowerCase")]
+    partial class AllColumnsToLowerCase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,7 +43,7 @@ namespace DataAccess.Migrations
 
                     b.Property<int>("Energy")
                         .HasColumnType("integer")
-                        .HasColumnName("EnergyOfAnimal");
+                        .HasColumnName("Energy");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -55,10 +55,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("SecretInformation")
                         .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -79,6 +75,10 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Limit")
+                        .HasColumnType("integer")
+                        .HasColumnName("AnimalLimit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
@@ -91,7 +91,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmployeesOfZoo", (string)null);
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("DomainAnimal.Entities.Lion", b =>

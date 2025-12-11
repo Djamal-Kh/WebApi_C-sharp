@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmployee
+namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmployee
 {
-    public class PromoteEmployeeValidation : AbstractValidator<PromoteEmployeeCommand>
+    public class DeleteEmployeeValidator : AbstractValidator<DeleteEmployeeCommand>
     {
-        public PromoteEmployeeValidation()
+        public DeleteEmployeeValidator()
         {
             RuleFor(command => command.employeeId)
                 .NotEmpty().WithError(GeneralErrors.ValueIsRequired("employeeId"))

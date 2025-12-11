@@ -11,27 +11,27 @@ using System.Threading.Tasks;
 namespace ApplicationAnimal.Services.Employees.Queries
 {
     // мб сделать валидацию входных параметров
-    public sealed class GetEmployeesByPositionsHandle
+    public sealed class GetEmployeesByPositionsHandler
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public GetEmployeesByPositionsHandle(IDbConnectionFactory connectionFactory)
+        public GetEmployeesByPositionsHandler(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
-
+        
         public async Task<GetEmployeesDto> Handle(EnumEmployeePosition position, CancellationToken cancellationToken)
         {
             var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
             const string sql =
                 """
-                SELECT Id,
-                    Name,
-                    Position,
-                    Limit
-                FROM Employees
-                Where Position = @EmployeePosition
+                SELECT id,
+                    name,
+                    position,
+                    animal_limit
+                FROM employees
+                Where position = @EmployeePosition
                 """;
             
             var param = new {EmployeePosition = position.ToString()};

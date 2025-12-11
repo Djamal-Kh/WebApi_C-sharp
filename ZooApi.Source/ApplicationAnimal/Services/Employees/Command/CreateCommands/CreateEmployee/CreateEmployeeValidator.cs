@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Shared.Common.Extensions;
+using Shared.Common.ResultPattern;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +15,17 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
         public CreateEmployeeValidator() 
         {
             RuleFor(command => command.CreateEmployeeRequest.Name)
-              .NotNull().WithMessage("Поле \"name\" не должно быть пустым")
-              .NotEmpty().WithMessage("Поле \"name\" не должно быть пустым");
+              .NotNull().WithError(GeneralErrors.ValueIsRequired("Поле \"name\" не должно быть пустым"))
+              .NotEmpty().WithError(GeneralErrors.ValueIsRequired("Поле \"name\" не должно быть пустым"));
 
             RuleFor(command => command.CreateEmployeeRequest.Name)
-                .Length(20).WithMessage("Имя должно содержать не более 20 символов")
+                .MaximumLength(20).WithError(GeneralErrors.ValueIsInvalid("Имя должно содержать не более 20 символов"))
                 .Must(name => Regex.IsMatch(name, @"^[a-zA-Zа-яА-Я\s]+$"))
-                    .WithMessage("Не используйте в имени специальные знаки и числа")
+                    .WithError(GeneralErrors.ValueIsInvalid("Не используйте в имени специальные знаки и числа"))
                     .When(command => !string.IsNullOrWhiteSpace(command.CreateEmployeeRequest.Name)); ;
 
             RuleFor(command => command.CreateEmployeeRequest.Position)
-                .NotNull().WithMessage("Поле \"Position\" не должно быть пустым");
+                .NotNull().WithError(GeneralErrors.ValueIsRequired("Поле \"Position\" не должно быть пустым"));
         }
     }
 }

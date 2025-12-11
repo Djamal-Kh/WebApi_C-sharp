@@ -6,6 +6,8 @@ using ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmployee
 using ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllBoundAnimals;
 using ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmployee;
 using ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmployee;
+using ApplicationAnimal.Services.Employees.Queries;
+using DomainAnimal.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common.Abstractions.Employees;
 
@@ -25,10 +27,58 @@ namespace WebApiAnimal.Controllers
 
             var result = await handler.Handle(command, cancellationToken);
 
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok(result.Value);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetEmployees(
+            [FromServices] GetEmployeesHandler handler,
+            CancellationToken cancellationToken)
+        {
+            var result = await handler.Handle(cancellationToken);
             return Ok(result);
         }
 
-        [HttpPost("employees/{employeeId}/animals/{animalId}")]
+        [HttpGet("{employeeId}")]
+        public async Task<IActionResult> GetEmployeeById(
+            [FromServices] GetEmployeeByIdHandler handler,
+            [FromRoute] int employeeId,
+            CancellationToken cancellationToken)
+        {
+            var result = await handler.Handle(employeeId, cancellationToken);
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("employees-with-animals")]
+        public async Task<IActionResult> GetEmployeesWithAnimals(
+            [FromServices] GetEmployeesWithoutAnimalsHandler handler,
+            CancellationToken cancellationToken)
+        {
+            var result = await handler.Handle(cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("employees-by-positions/{position}")]
+        public async Task<IActionResult> GetEmployeesByPositions(
+            [FromServices] GetEmployeesByPositionsHandler handler,
+            [FromRoute] EnumEmployeePosition position,
+            CancellationToken cancellationToken)
+        {
+            var result = await handler.Handle(position, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPatch("employees/{employeeId}/animals/{animalId}")]
         public async Task<IActionResult> CreateBoundWithAnimal(
             [FromServices] ICommandHandler<string, CreateBoundWithAnimalCommand> handler,
             [FromRoute] int employeeId,
@@ -39,7 +89,12 @@ namespace WebApiAnimal.Controllers
 
             var result = await handler.Handle(command, cancellationToken);
 
-            return Ok(result);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok(result.Value);
         }
 
         [HttpPatch("employees/{employeeId}/promote")]
@@ -52,7 +107,12 @@ namespace WebApiAnimal.Controllers
 
             var result = await handler.Handle(command, cancellationToken);
 
-            return Ok(result);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error); 
+            }
+
+            return Ok(result.Value);
         }
 
         [HttpPatch("employees/{employeeId}/demote")]
@@ -65,7 +125,12 @@ namespace WebApiAnimal.Controllers
 
             var result = await handler.Handle(command, cancellationToken);
 
-            return Ok(result);
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok(result.Value);
         }
 
         [HttpDelete("employees/{employeeId}/deleteEmployee")]
@@ -77,6 +142,11 @@ namespace WebApiAnimal.Controllers
             var command = new DeleteEmployeeCommand(employeeId);
 
             var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error); 
+            }
 
             return Ok(result);
         }
@@ -90,6 +160,11 @@ namespace WebApiAnimal.Controllers
             var command = new RemoveAllBoundAnimalsCommand(employeeId);
 
             var result = await handler.Handle(command, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return BadRequest(result.Error);
+            }
 
             return Ok(result);
         }

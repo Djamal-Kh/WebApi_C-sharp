@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Queries
 {
-    public sealed class GetEmployeeByIdHandle
+    public sealed class GetEmployeeByIdHandler
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public GetEmployeeByIdHandle(IDbConnectionFactory connectionFactory)
+        public GetEmployeeByIdHandler(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -24,11 +24,11 @@ namespace ApplicationAnimal.Services.Employees.Queries
 
             const string sql =
                 $"""
-                SELECT Id,
-                    Name,
-                    Position,
-                    Limit
-                FROM Employees
+                SELECT id,
+                    name,
+                    position,
+                    animal_limit
+                FROM employees
                 WHERE Id = @EmployeeId
                 """;
 

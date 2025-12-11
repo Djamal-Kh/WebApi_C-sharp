@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Queries
 {
-    public sealed class GetEmployeesWithoutAnimalsHandle
+    public sealed class GetEmployeesHandler
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public GetEmployeesWithoutAnimalsHandle(IDbConnectionFactory connectionFactory)
+        public GetEmployeesHandler(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -22,18 +22,18 @@ namespace ApplicationAnimal.Services.Employees.Queries
         {
             var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
-            const string sql =
+            // SQL запрос для последующего использования Dapper`ом
+            const string sql = 
                 """
-                SELECT Id,
-                    e.Name,
-                    e.Position,
-                    e.Limit,
-                From Employees e
-                LEFT JOIN Animals a ON e.Id = a.EmployeeId
-                Where a.EmployeeId IS NULL
-                ORDER BY e.Name
+                SELECT id, 
+                    name, 
+                    position, 
+                    animal_limit 
+                FROM employees
+                ORDER BY Name;
                 """;
 
+            // Реализация запроса на получение сотрудников с использованием Dapper
             var employees = await connection.QueryAsync<EmployeeDto>(sql);
 
             return new GetEmployeesDto(employees.ToList());

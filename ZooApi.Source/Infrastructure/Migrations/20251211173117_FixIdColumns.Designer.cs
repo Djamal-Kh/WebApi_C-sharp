@@ -3,6 +3,7 @@ using System;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,13 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppContextDB))]
-    partial class AppContextDBModelSnapshot : ModelSnapshot
+    [Migration("20251211173117_FixIdColumns")]
+    partial class FixIdColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.8")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -26,40 +29,42 @@ namespace DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AnimalType")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)");
-
                     b.Property<int?>("EmployeeId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("employee_id");
 
                     b.Property<int>("Energy")
                         .HasColumnType("integer")
-                        .HasColumnName("Energy");
+                        .HasColumnName("energy");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("Name");
+                        .HasColumnName("name");
 
                     b.Property<Guid>("SomeSecretInformation")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("SecretInformation")
+                        .HasColumnName("secret_information")
                         .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("animal_type")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("AnimalsOfZoo", (string)null);
+                    b.ToTable("animals", (string)null);
 
-                    b.HasDiscriminator<string>("AnimalType").HasValue("Animal");
+                    b.HasDiscriminator<string>("animal_type").HasValue("Animal");
 
                     b.UseTphMappingStrategy();
                 });
@@ -68,23 +73,28 @@ namespace DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Limit")
+                        .HasColumnType("integer")
+                        .HasColumnName("animal_limit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("Name");
+                        .HasColumnName("name");
 
                     b.Property<string>("Position")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("Position");
+                        .HasColumnName("position");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("employees", (string)null);
                 });
 
             modelBuilder.Entity("DomainAnimal.Entities.Lion", b =>

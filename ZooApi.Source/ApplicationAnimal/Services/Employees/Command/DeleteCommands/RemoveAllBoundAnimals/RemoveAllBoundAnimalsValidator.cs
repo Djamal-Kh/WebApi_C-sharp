@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmployee
+namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllBoundAnimals
 {
-    public class DemoteEmployeeValidation : AbstractValidator<DemoteEmployeeCommand>
+    public class RemoveAllBoundAnimalsValidator : AbstractValidator<RemoveAllBoundAnimalsCommand>
     {
-        public DemoteEmployeeValidation()
+        public RemoveAllBoundAnimalsValidator()
         {
             RuleFor(command => command.employeeId)
                 .NotEmpty().WithError(GeneralErrors.ValueIsRequired("employeeId"))

@@ -1,4 +1,5 @@
 ﻿using ApplicationAnimal.Common.Abstractions;
+using Infrastructure.ContextsDb;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Infrastructure
 
         public NpsqlConnectionFactory(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("AppContextDB");
         }
         public async Task<IDbConnection> CreateConnectionAsync(CancellationToken cancellationToken)
         {

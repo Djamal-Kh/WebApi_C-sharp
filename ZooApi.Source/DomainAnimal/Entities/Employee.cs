@@ -14,7 +14,7 @@ namespace DomainAnimal.Entities
         public int Id { get; private set; }
         public string Name { get; private set; }
         public EnumEmployeePosition Position { get; private set; }
-        private int Limit { get; set; }
+        public int Limit { get; private set; }
         public ICollection<Animal> Animals { get; private set; }
 
         // конструктор без параметров для EF Core
@@ -59,7 +59,7 @@ namespace DomainAnimal.Entities
             if (Position == EnumEmployeePosition.Senior)
                 return GeneralErrors.ValueIsInvalid();
 
-            Position--;
+            Position++;
             Limit = GetLimitForPosition(Position);
             return UnitResult.Success<Error>();
         }
