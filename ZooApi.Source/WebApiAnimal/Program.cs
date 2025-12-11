@@ -1,7 +1,6 @@
 global using CSharpFunctionalExtensions;
 using ApplicationAnimal.BackgroundServ;
 using ApplicationAnimal.Common.Abstractions;
-using ApplicationAnimal.Common.Abstractions.Animals;
 using ApplicationAnimal.Services.Animals;
 using FluentValidation;
 using Infrastructure;

@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Shared.Common.ResultParttern;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Common.ResultPattern;
+
+namespace Shared.Common.ResultPattern;
 public class Errors : IEnumerable<Error>
 {
     private readonly List<Error> _errors;

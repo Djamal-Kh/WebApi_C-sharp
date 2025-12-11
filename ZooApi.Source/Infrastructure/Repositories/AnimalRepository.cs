@@ -1,12 +1,12 @@
-﻿using ApplicationAnimal.Common.Abstractions.Animals;
-using ApplicationAnimal.Common.DTO;
-using ApplicationAnimal.Common.ResultPattern;
+﻿using ApplicationAnimal.Common.DTO;
+using ApplicationAnimal.Services.Animals;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
 
 using Npgsql;
+using Shared.Common.ResultPattern;
 
 namespace Infrastructure.Repositories
 {

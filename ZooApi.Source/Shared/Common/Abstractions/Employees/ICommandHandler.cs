@@ -1,13 +1,13 @@
-﻿using ApplicationAnimal.Common.ResultPattern;
-using CSharpFunctionalExtensions;
-using DomainAnimal.Entities;
+﻿using CSharpFunctionalExtensions;
+using Shared.Common.ResultPattern;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Common.Abstractions.Employees
+
+namespace Shared.Common.Abstractions.Employees
 {
     public interface ICommandHandler<TResponse, in TCommand> 
         where TCommand : ICommand

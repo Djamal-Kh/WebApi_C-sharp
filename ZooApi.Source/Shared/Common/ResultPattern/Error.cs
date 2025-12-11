@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Shared.Common.ResultPattern;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Common.ResultPattern;
+namespace Shared.Common.ResultParttern;
 
 public record Error
 {

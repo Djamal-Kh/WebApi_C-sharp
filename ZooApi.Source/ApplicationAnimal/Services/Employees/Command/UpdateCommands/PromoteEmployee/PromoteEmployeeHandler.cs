@@ -1,5 +1,6 @@
-﻿using ApplicationAnimal.Common.Abstractions.Employees;
-using ApplicationAnimal.Common.ResultPattern;
+﻿using Shared.Common.Abstractions.Employees;
+using Shared.Common.ResultPattern;
+using Shared.Common.Extensions;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using FluentValidation;
@@ -31,18 +32,15 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmp
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
             if (!validationResult.IsValid)
             {
-                throw new NotImplementedException();
+                return validationResult.ToList();
             }
 
-            // Поменять параметры и ответ у метода в репозитории
-            var employeeResult = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
+            var employee = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
 
-            if (employeeResult.IsFailure)
+            if (employee is null)
             {
                 return GeneralErrors.NotFound().ToErrors();
             }
-
-            Employee employee = employeeResult.Value;
 
             var result = await _employeeRepository.PromotionEmployeeAsync(employee, cancellationToken);
 

@@ -1,14 +1,10 @@
-﻿using ApplicationAnimal.Common.Abstractions.Employees;
-using ApplicationAnimal.Common.ResultPattern;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.Common.Abstractions.Employees;
+using Shared.Common.ResultPattern;
+using Shared.Common.Extensions;
 
 namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee
 {
@@ -28,10 +24,12 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
         {
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
             if (!validationResult.IsValid)
             {
-                throw new NotImplementedException();
+                return validationResult.ToList();
             }
+
 
             // создание
             string name = command.CreateEmployeeRequest.Name;

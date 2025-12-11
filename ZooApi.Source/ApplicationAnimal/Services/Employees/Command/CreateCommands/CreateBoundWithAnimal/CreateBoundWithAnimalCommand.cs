@@ -1,5 +1,6 @@
 ﻿using ApplicationAnimal.Common.DTO;
-using ICommand = ApplicationAnimal.Common.Abstractions.Employees.ICommand;
+using Shared.Common.Abstractions.Employees;
+
 
 namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal
 {

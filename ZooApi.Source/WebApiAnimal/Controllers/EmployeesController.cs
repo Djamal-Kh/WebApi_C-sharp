@@ -1,4 +1,4 @@
-﻿using ApplicationAnimal.Common.Abstractions.Employees;
+﻿
 using ApplicationAnimal.Common.DTO;
 using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal;
 using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee;
@@ -7,6 +7,7 @@ using ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllBound
 using ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmployee;
 using ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmployee;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Common.Abstractions.Employees;
 
 namespace WebApiAnimal.Controllers
 {

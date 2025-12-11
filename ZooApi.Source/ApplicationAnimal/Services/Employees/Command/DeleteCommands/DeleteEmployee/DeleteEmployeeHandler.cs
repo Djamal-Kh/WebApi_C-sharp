@@ -1,8 +1,9 @@
-﻿using ApplicationAnimal.Common.Abstractions.Employees;
-using ApplicationAnimal.Common.ResultPattern;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using Shared.Common.Abstractions.Employees;
+using Shared.Common.ResultPattern;
+using Shared.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmpl
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
             if (!validationResult.IsValid)
             {
-                throw new NotImplementedException();
+                return validationResult.ToList();
             }
 
             var result = await _employeeRepository.FireEmployeeAsync(command.employeeId, cancellationToken);

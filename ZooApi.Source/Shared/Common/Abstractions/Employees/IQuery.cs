@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Common.Abstractions.Employees
+namespace Shared.Common.Abstractions.Employees
 {
     public interface IQuery<TResponse>
     {

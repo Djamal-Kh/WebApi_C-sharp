@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
+using Shared.Common.ResultParttern;
+using Shared.Common.ResultPattern;
 
 namespace DomainAnimal.Entities
 {
@@ -41,26 +44,44 @@ namespace DomainAnimal.Entities
             };
         }
 
-        public bool Demotion()
+        public UnitResult<Error> Demotion()
         {
-            if (Position == EnumEmployeePosition.Junior)
-                return false;
+            if (Position == EnumEmployeePosition.Traine)
+                return GeneralErrors.ValueIsInvalid();
 
             Position--;
-            return true;
+            Limit = GetLimitForPosition(Position);
+            return UnitResult.Success<Error>();
         }
 
-        public bool Promotion()
+        public UnitResult<Error> Promotion()
         {
             if (Position == EnumEmployeePosition.Senior)
-                return false;
+                return GeneralErrors.ValueIsInvalid();
 
             Position--;
-            return true;
+            Limit = GetLimitForPosition(Position);
+            return UnitResult.Success<Error>();
+        }
+    
+
+    public UnitResult<Error> AssignAnimal(Animal animal)
+        {
+            if (Animals.Count >= Limit)
+                return GeneralErrors.ValueIsInvalid($"Превышен лимит ({Limit}) животных для данного сотрудника");
+
+            if (animal.EmployeeId != null)
+            {
+                if (animal.EmployeeId != this.Id)
+                    return GeneralErrors.ValueIsInvalid($"Животное уже закреплено за этим сотрудником");
+
+                return GeneralErrors.ValueIsInvalid($"Животное уже закреплено за другим сотрудником с ID = {animal.EmployeeId} ");
+            }
+
+            Animals.Add(animal);
+            return UnitResult.Success<Error>();
         }
     }
-
-
     public enum EnumEmployeePosition
     {
         Traine = 1,

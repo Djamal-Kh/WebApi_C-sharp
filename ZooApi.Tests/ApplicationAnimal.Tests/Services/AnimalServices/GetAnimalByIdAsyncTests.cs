@@ -1,5 +1,4 @@
-﻿using ApplicationAnimal.Common.Abstractions.Animals;
-using ApplicationAnimal.Services.Animals;
+﻿using ApplicationAnimal.Services.Animals;
 using Castle.Core.Logging;
 using DomainAnimal.Entities;
 using FluentAssertions;

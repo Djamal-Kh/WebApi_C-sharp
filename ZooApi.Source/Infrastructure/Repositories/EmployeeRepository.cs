@@ -1,9 +1,10 @@
-﻿using ApplicationAnimal.Common.ResultPattern;
-using ApplicationAnimal.Services.Employees;
+﻿using ApplicationAnimal.Services.Employees;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
+using Shared.Common.ResultParttern;
+using Shared.Common.ResultPattern;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,17 +31,21 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<UnitResult<Error>> AssignAnimalToEmployeeAsync(int employeeId, int animalId, CancellationToken cancellation)
+        /* Да, понимаю что это очень странный костыль
+         * Но это заготовка под возможный переход на DDD. 
+         * В случае перехода на него, будет довольно легко это сделать
+         * А пока оставим как есть. По идее должно работать
+        */
+        public async Task<UnitResult<Errors>> AssignAnimalToEmployeeAsync(Employee employee, Animal animal, CancellationToken cancellationToken)
         {
-            var exists = await context.Animals
-                .Where(a => a.Id == animalId)
-                .ExecuteUpdateAsync(e =>
-                    e.SetProperty(e => e.EmployeeId, employeeId));
+            var result = employee.AssignAnimal(animal);
 
-            if (exists == 0)
-                return GeneralErrors.ValueIsInvalid();
+            if (result.IsFailure)
+                return result.Error.ToErrors();
 
-            return UnitResult.Success<Error>();
+            await context.SaveChangesAsync();
+
+            return UnitResult.Success<Errors>();
         }
 
         public async Task<UnitResult<Error>> FireEmployeeAsync(int id, CancellationToken cancellationToken)
@@ -57,11 +62,11 @@ namespace Infrastructure.Repositories
 
         public async Task<UnitResult<Error>> DemotionEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
-            bool result = employee.Demotion();
+            var result = employee.Demotion();
 
             await context.SaveChangesAsync();
             
-            if (!result)
+            if (result.IsFailure)
                 return GeneralErrors.ValueIsInvalid();
 
             return UnitResult.Success<Error>();
@@ -69,11 +74,11 @@ namespace Infrastructure.Repositories
 
         public async Task<UnitResult<Error>> PromotionEmployeeAsync(Employee employee, CancellationToken cancellationToken)
         {
-            bool result = employee.Promotion();
+            var result = employee.Promotion();
 
             await context.SaveChangesAsync(cancellationToken);
             
-            if (!result)
+            if (result.IsFailure)
                 return GeneralErrors.ValueIsInvalid();
 
             return UnitResult.Success<Error>();
@@ -101,12 +106,17 @@ namespace Infrastructure.Repositories
                     e.SetProperty(e => e.EmployeeId, e => null));
         }
 
-        public async Task<Result<Employee, Error>> GetByIdAsync(int employeeId, CancellationToken cancellationToken)
+        public async Task<Employee?> GetByIdAsync(int employeeId, CancellationToken cancellationToken)
         {
             var employee = await context.Employees.FindAsync(employeeId, cancellationToken);
-            
-            if (employee == null)
-                return GeneralErrors.NotFound();
+            return employee;
+        }
+
+        public async Task<Employee?> GetByIdWithAnimalsAsync(int employeeId, CancellationToken cancellationToken)
+        {
+            var employee = await context.Employees
+                .Include(e => e.Animals)
+                .FirstOrDefaultAsync(e => e.Id == employeeId);
 
             return employee;
         }

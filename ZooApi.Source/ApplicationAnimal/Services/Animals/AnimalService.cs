@@ -1,10 +1,9 @@
-﻿using ApplicationAnimal.Common.Abstractions.Animals;
-using ApplicationAnimal.Common.DTO;
-using ApplicationAnimal.Common.ResultPattern;
+﻿using ApplicationAnimal.Common.DTO;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using DomainAnimal.Factories;
 using Microsoft.Extensions.Logging;
+using Shared.Common.ResultPattern;
 
 namespace ApplicationAnimal.Services.Animals
 {

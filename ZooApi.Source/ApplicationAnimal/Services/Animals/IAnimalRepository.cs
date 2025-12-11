@@ -1,9 +1,9 @@
 ﻿using ApplicationAnimal.Common.DTO;
-using ApplicationAnimal.Common.ResultPattern;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
+using Shared.Common.ResultPattern;
 
-namespace ApplicationAnimal.Common.Abstractions.Animals
+namespace ApplicationAnimal.Services.Animals
 {
     public interface IAnimalRepository
     {

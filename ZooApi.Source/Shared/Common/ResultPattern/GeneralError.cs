@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Shared.Common.ResultParttern;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationAnimal.Common.ResultPattern;
+namespace Shared.Common.ResultPattern;
 public static class GeneralErrors
 {
     public static Error ValueIsInvalid(string? name = null)

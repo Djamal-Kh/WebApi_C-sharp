@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace ApplicationAnimal.Common.Abstractions.Employees
+namespace Shared.Common.Abstractions.Employees
 {
     public interface IQueryHandler<in TQuery, TResponse>
         where TQuery : IQuery<TResponse>

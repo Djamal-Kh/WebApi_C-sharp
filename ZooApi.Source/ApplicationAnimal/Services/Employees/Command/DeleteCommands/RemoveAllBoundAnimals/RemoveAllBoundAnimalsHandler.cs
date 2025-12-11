@@ -1,5 +1,6 @@
-﻿using ApplicationAnimal.Common.Abstractions.Employees;
-using ApplicationAnimal.Common.ResultPattern;
+﻿using Shared.Common.Abstractions.Employees;
+using Shared.Common.ResultPattern;
+using Shared.Common.Extensions;
 using CSharpFunctionalExtensions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllB
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
             if (!validationResult.IsValid)
             {
-                throw new NotImplementedException();
+                return validationResult.ToList();
             }
 
             var result = await _employeeRepository.RemoveAllBoundAnimalsAsync(command.employeeId, cancellationToken);

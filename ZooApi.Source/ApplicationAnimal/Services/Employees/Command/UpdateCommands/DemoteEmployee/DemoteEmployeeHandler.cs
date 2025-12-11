@@ -1,5 +1,6 @@
-﻿using ApplicationAnimal.Common.Abstractions.Employees;
-using ApplicationAnimal.Common.ResultPattern;
+﻿using Shared.Common.Abstractions.Employees;
+using Shared.Common.ResultPattern;
+using Shared.Common.Extensions;
 using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
@@ -30,15 +31,17 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
         {
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                return validationResult.ToList();
+            }
 
-            var employeeResult = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
+            var employee = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
 
-            if (employeeResult.IsFailure)
+            if (employee is null)
             {
                 return GeneralErrors.NotFound().ToErrors();
             }
-
-            Employee employee = employeeResult.Value;
 
             var result = await _employeeRepository.DemotionEmployeeAsync(employee, cancellationToken);
 

@@ -5,7 +5,7 @@ using FluentValidation;
 using WebApiAnimal.Filters;
 using WebApiAnimal.DTO;
 using DomainAnimal.Entities;
-using ApplicationAnimal.Common.Abstractions.Animals;
+using ApplicationAnimal.Services.Animals;
 
 namespace ZooApi.Controllers
 {
