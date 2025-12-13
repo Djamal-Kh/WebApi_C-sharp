@@ -29,10 +29,17 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
 
         public async Task<Result<int, Errors>> Handle(DemoteEmployeeCommand command, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Handling DemoteEmployeeCommand for EmployeeId: {EmployeeId}",
+                command.employeeId);
+
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
             if (!validationResult.IsValid)
             {
+                _logger.LogWarning("Validation failed for DemoteEmployeeCommand: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+
                 return validationResult.ToList();
             }
 
@@ -40,6 +47,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
 
             if (employee is null)
             {
+                _logger.LogWarning("Employee with Id {EmployeeId} not found", command.employeeId);
                 return GeneralErrors.NotFound().ToErrors();
             }
 
@@ -47,10 +55,13 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
 
             if (result.IsFailure)
             {
-                _logger.LogError("Ошибка при понижении сотрудника с Id {EmployeeId}: {Error}", command.employeeId, result.Error);
+                _logger.LogError("Failed to demote Employee with Id {EmployeeId}: {Error}",
+                    command.employeeId, result.Error);
+
                 return GeneralErrors.Failure("Ошибка при понижении сотрудника").ToErrors();
             }
 
+            _logger.LogInformation("Successfully demoted Employee with Id {EmployeeId}", employee.Id);
             return employee.Id;
         }
     }

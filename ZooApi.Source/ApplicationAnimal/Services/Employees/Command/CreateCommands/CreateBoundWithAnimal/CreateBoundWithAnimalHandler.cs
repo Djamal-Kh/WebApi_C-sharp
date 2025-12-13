@@ -26,27 +26,51 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
 
         public async Task<Result<string, Errors>> Handle(CreateBoundWithAnimalCommand command, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Handling CreateBoundWithAnimalCommand for EmployeeId: {EmployeeId} and AnimalId: {AnimalId}",
+                command.employeeId, command.animalId);
+
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
             if (!validationResult.IsValid)
             {
-               return validationResult.ToList();
+                _logger.LogWarning("Validation failed for CreateBoundWithAnimalCommand: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+
+                return validationResult.ToList();
             }
 
             Animal animal = await _animalRepository.GetAnimalByIdAsync(command.animalId, cancellationToken);
 
             if (animal == null)
-                return GeneralErrors.NotFound().ToErrors();
+            {
+                _logger.LogWarning("Animal with Id {AnimalId} not found.", 
+                    command.animalId);
 
+                return GeneralErrors.NotFound().ToErrors();
+            }
+                
             Employee employee = await _employeeRepository.GetByIdWithAnimalsAsync(command.employeeId, cancellationToken);
 
             if (employee == null)
-                return GeneralErrors.NotFound().ToErrors();
+            {
+                _logger.LogWarning("Employee with Id {EmployeeId} not found.", 
+                    command.employeeId);
+
+                return GeneralErrors.NotFound().ToErrors(); 
+            }
 
             var result = await _employeeRepository.AssignAnimalToEmployeeAsync(employee, animal, cancellationToken);
 
             if (result.IsFailure)
+            {
+                _logger.LogWarning("Failed to assign Animal with Id {AnimalId} to Employee with Id {EmployeeId}",
+                    command.animalId, command.employeeId);
+
                 return GeneralErrors.ValueIsInvalid().ToErrors();
+            }
+
+            _logger.LogInformation("Successfully assigned Animal with Id {AnimalId} to Employee with Id {EmployeeId}",
+                        command.animalId, command.employeeId);
 
             return $"Employee с id {command.employeeId} успешно привязан к Animal с id {command.animalId}";
         }

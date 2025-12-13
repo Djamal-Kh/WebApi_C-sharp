@@ -27,17 +27,32 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmpl
 
         public async Task<UnitResult<Errors>> Handle(DeleteEmployeeCommand command, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Handling DeleteEmployeeCommand for EmployeeId: {EmployeeId}",
+                command.employeeId);
+
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
             if (!validationResult.IsValid)
             {
+                _logger.LogWarning("Validation failed for DeleteEmployeeCommand: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+
                 return validationResult.ToList();
             }
 
             var result = await _employeeRepository.FireEmployeeAsync(command.employeeId, cancellationToken);
 
             if (result.IsFailure)
+            {
+                _logger.LogError("Failed to delete employee with ID {EmployeeId}: {Error}",
+                    command.employeeId, result.Error);
+
                 return GeneralErrors.ValueIsInvalid().ToErrors();
+            }
+                
+            _logger.LogInformation("Successfully deleted employee with ID {EmployeeId}",
+                command.employeeId);
 
             return UnitResult.Success<Errors>();
         }

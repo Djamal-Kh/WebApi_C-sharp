@@ -34,11 +34,11 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
 
         private bool isValidValueEmployeeEnum(string positionString)
         {
-            if (Enum.TryParse(typeof(EnumEmployeePosition), positionString, ignoreCase: true, out _))
-                return true;
-
             if (int.TryParse(positionString, out int enumValue))
                 return Enum.IsDefined(typeof(EnumEmployeePosition), enumValue);
+
+            if (Enum.TryParse(typeof(EnumEmployeePosition), positionString, ignoreCase: true, out _))
+                return true;
                 
             return false;
         }

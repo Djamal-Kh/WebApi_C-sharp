@@ -22,11 +22,17 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
 
         public async Task<Result<int, Errors>> Handle(CreateEmployeeCommand command, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Handling CreateEmployeeCommand for Name: {Name}",
+                command.CreateEmployeeRequest.Name);
+
             // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
             if (!validationResult.IsValid)
             {
+                _logger.LogWarning("Validation failed for CreateEmployeeCommand: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+
                 return validationResult.ToList();
             }
 
@@ -36,7 +42,10 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
             bool isDuplicateName = await _employeeRepository.isDuplicateNameAsync(name, cancellationToken);
 
             if (isDuplicateName)
-                return GeneralErrors.ValueIsInvalid().ToErrors();
+            {
+                _logger.LogWarning("Duplicate employee name detected: {Name}", name);
+                return GeneralErrors.ValueAlreadyExists(nameof(name)).ToErrors();
+            }
 
             string toEnumPosition = command.CreateEmployeeRequest.Position;
 
@@ -49,8 +58,14 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
             var saveEmployee = await _employeeRepository.AddEmployeeAsync(employee, cancellationToken);
 
             if (saveEmployee.IsFailure)
-                return GeneralErrors.ValueIsInvalid().ToErrors();
+            {
+                _logger.LogError("Failed to save new employee: {Errors}",
+                    string.Join(", ", saveEmployee.Error));
 
+                return GeneralErrors.ValueIsInvalid().ToErrors();
+            }
+                
+            _logger.LogInformation("Successfully created employee with ID: {Id}", saveEmployee.Value);
             return saveEmployee.Value;
         }
     }

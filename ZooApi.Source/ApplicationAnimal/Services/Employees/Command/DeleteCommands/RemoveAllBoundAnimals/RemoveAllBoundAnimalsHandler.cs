@@ -27,16 +27,31 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllB
 
         public async Task<UnitResult<Errors>> Handle(RemoveAllBoundAnimalsCommand command, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Handling RemoveAllBoundAnimalsCommand for EmployeeId: {EmployeeId}",
+                command.employeeId);
+
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+
             if (!validationResult.IsValid)
             {
+                _logger.LogWarning("Validation failed for RemoveAllBoundAnimalsCommand: {Errors}",
+                    string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
+
                 return validationResult.ToList();
             }
 
             var result = await _employeeRepository.RemoveAllBoundAnimalsAsync(command.employeeId, cancellationToken);
             
             if (result.IsFailure)
+            {
+                _logger.LogError("Failed to remove all bound animals for EmployeeId: {EmployeeId}. Errors: {Errors}",
+                    command.employeeId, string.Join(", ", result.Error));
+
                 return GeneralErrors.ValueIsInvalid().ToErrors();
+            }
+                
+            _logger.LogInformation("Successfully removed all bound animals for EmployeeId: {EmployeeId}",
+                command.employeeId);
 
             return UnitResult.Success<Errors>();
         }
