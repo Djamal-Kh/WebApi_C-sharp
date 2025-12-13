@@ -62,15 +62,21 @@ var webApiAssembly = typeof(AddAnimalRequestDto).Assembly;
 var applicationAssembly = typeof(CreateEmployeeHandler).Assembly;
 var infrastructureAssembly = typeof(EmployeeRepository).Assembly;
 
+builder.Services.AddScoped<IValidator<AddAnimalRequestDto>, AddAnimalDtoValidator>();
+
 builder.Services.AddScoped<GetEmployeeByIdHandler>();
 builder.Services.AddScoped<GetEmployeesByPositionsHandler>();
-builder.Services.AddScoped<GetEmployeesHandler>();
+builder.Services.AddScoped<GetEmployeesHandler>(); 
 builder.Services.AddScoped<GetEmployeesWithoutAnimalsHandler>();
 
 // Использование Scrutor для регистрации Application (РАСПИШИ В OBSIDIAN !) 
 builder.Services.Scan(selector => selector
     .FromAssemblies(applicationAssembly)
     .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime()
+
+    .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
     .AsImplementedInterfaces()
     .WithScopedLifetime()
 

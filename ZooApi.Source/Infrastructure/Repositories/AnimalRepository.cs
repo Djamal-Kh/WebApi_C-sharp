@@ -54,7 +54,7 @@ namespace Infrastructure.Repositories
             {
                 var animal = await context.Animals
                     .FromSqlRaw(
-                    "Select * FROM \"AnimalsOfZoo\" WHERE \"Id\" = {0} FOR NO KEY UPDATE"
+                    "Select * FROM animals WHERE id = {0} FOR NO KEY UPDATE"
                     , id
                     )
                     .AsTracking()
@@ -80,7 +80,7 @@ namespace Infrastructure.Repositories
         }
 
 
-
+        
         public async Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default)
         {
             bool exist = await context.Animals.AnyAsync(n => n.Name == name);

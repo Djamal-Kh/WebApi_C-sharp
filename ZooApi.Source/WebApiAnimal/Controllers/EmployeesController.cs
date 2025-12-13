@@ -59,7 +59,7 @@ namespace WebApiAnimal.Controllers
             return Ok(result);
         }
 
-        [HttpGet("employees-with-animals")]
+        [HttpGet("employees-without-animals")]
         public async Task<IActionResult> GetEmployeesWithAnimals(
             [FromServices] GetEmployeesWithoutAnimalsHandler handler,
             CancellationToken cancellationToken)
@@ -148,7 +148,7 @@ namespace WebApiAnimal.Controllers
                 return BadRequest(result.Error); 
             }
 
-            return Ok(result);
+            return Ok(employeeId);
         }
 
         [HttpDelete("employees/{employeeId}/removeBounds")]
@@ -166,7 +166,7 @@ namespace WebApiAnimal.Controllers
                 return BadRequest(result.Error);
             }
 
-            return Ok(result);
+            return Ok(employeeId);
         }
     }
 }

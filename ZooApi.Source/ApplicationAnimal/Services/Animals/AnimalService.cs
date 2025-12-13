@@ -89,5 +89,10 @@ namespace ApplicationAnimal.Services.Animals
 
             return $"Животное с id = {id} было удалено";
         }
+
+        public Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

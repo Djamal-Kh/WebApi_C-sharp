@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
 
         public async Task<UnitResult<Error>> FireEmployeeAsync(int id, CancellationToken cancellationToken)
         {
-            var exists = await context.Animals
+            var exists = await context.Employees
                 .Where(e => e.Id == id)
                 .ExecuteDeleteAsync();
 
@@ -119,6 +119,12 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(e => e.Id == employeeId);
 
             return employee;
+        }
+
+        public async Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            bool exist = await context.Employees.AnyAsync(n => n.Name == name);
+            return exist;
         }
     }
 }

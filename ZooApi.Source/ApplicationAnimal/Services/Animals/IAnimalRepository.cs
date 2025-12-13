@@ -14,7 +14,8 @@ namespace ApplicationAnimal.Services.Animals
         Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default); // новое
         Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default); // передалть по ТЗ
         Task DeleteAnimalAsync(Animal animal, CancellationToken cancellationToken = default);
-        Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default); // унифицировать метод - сделать общим и для животных и для сотрудников
+        // мб унифицировать метод для Animal и Employee
+        Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default); 
         Task DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default);
         Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken = default); 
     }

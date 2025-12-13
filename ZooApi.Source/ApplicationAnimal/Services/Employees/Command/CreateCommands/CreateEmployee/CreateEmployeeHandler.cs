@@ -30,14 +30,22 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
                 return validationResult.ToList();
             }
 
-
-            // создание
+            // бизнес-логика и создание
             string name = command.CreateEmployeeRequest.Name;
-            EnumEmployeePosition position = command.CreateEmployeeRequest.Position;
+
+            bool isDuplicateName = await _employeeRepository.isDuplicateNameAsync(name, cancellationToken);
+
+            if (isDuplicateName)
+                return GeneralErrors.ValueIsInvalid().ToErrors();
+
+            string toEnumPosition = command.CreateEmployeeRequest.Position;
+
+            EnumEmployeePosition position = (EnumEmployeePosition)Enum.Parse(
+                typeof(EnumEmployeePosition), toEnumPosition, ignoreCase: true);
 
             Employee employee = new(name, position);
 
-            // сохранение в БД
+            // сохранение новой сущности в БД
             var saveEmployee = await _employeeRepository.AddEmployeeAsync(employee, cancellationToken);
 
             if (saveEmployee.IsFailure)
