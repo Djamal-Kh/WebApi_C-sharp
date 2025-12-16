@@ -1,4 +1,4 @@
-﻿using ApplicationAnimal.Common.Abstractions.Animals;
+﻿using ApplicationAnimal.Services.Animals;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

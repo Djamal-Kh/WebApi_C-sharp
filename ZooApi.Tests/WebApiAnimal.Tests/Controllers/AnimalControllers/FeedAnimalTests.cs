@@ -1,4 +1,4 @@
-﻿using ApplicationAnimal.Common.Abstractions.Animals;
+﻿using ApplicationAnimal.Services.Animals;
 using AutoMapper;
 using FluentAssertions;
 using FluentValidation;

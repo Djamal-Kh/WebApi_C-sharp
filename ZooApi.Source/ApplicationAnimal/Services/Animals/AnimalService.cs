@@ -1,9 +1,9 @@
-﻿using ApplicationAnimal.Common.Abstractions.Animals;
-using ApplicationAnimal.Common.ResultPattern;
+﻿using ApplicationAnimal.Common.DTO;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
 using DomainAnimal.Factories;
 using Microsoft.Extensions.Logging;
+using Shared.Common.ResultPattern;
 
 namespace ApplicationAnimal.Services.Animals
 {
@@ -39,6 +39,9 @@ namespace ApplicationAnimal.Services.Animals
         {
             var animals = await _animalRepository.GetAllAnimalsAsync(cancellationToken);
 
+            if (!animals.Any())
+                return GeneralErrors.CollectionEmpty().ToErrors();
+
             return animals;
         }
 
@@ -53,6 +56,16 @@ namespace ApplicationAnimal.Services.Animals
             return animal;
         }
 
+        public Task<Result<List<AnimalTypeCountDto>, Errors>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Result<List<Animal>, Errors>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
             var feedingResult = await _animalRepository.FeedAnimalAsync(id, cancellationToken);
@@ -65,12 +78,20 @@ namespace ApplicationAnimal.Services.Animals
 
         public async Task<Result<string, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _animalRepository.DeleteAnimalAsync(id, cancellationToken);
-
-            if(result.IsFailure)
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            if (animal is null)
+            {
                 return GeneralErrors.NotFound(id).ToErrors();
+            }
+
+            await _animalRepository.DeleteAnimalAsync(animal, cancellationToken);
 
             return $"The animal with {id} was removed";
+        }
+
+        public Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

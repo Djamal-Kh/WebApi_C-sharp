@@ -15,8 +15,8 @@ namespace Infrastructure.ContextsDb
             // Настройка модели (таблицы в БД) животных
             modelBuilder
                 .Entity<Animal>()
-                .ToTable("AnimalsOfZoo")
-                .HasDiscriminator<string>("AnimalType")
+                .ToTable("animals")
+                .HasDiscriminator<string>("animal_type")
                 .HasValue<Lion>("Lion")
                 .HasValue<Monkey>("Monkey");
 
@@ -26,18 +26,23 @@ namespace Infrastructure.ContextsDb
 
             modelBuilder
                 .Entity<Animal>()
+                .Property(x => x.Id)
+                .HasColumnName("id");
+
+            modelBuilder
+                .Entity<Animal>()
                 .Property(x => x.Name)
-                .HasColumnName("Name");
+                .HasColumnName("name");
 
             modelBuilder
                 .Entity<Animal>()
                 .Property(x => x.Energy)
-                .HasColumnName("Energy");
+                .HasColumnName("energy");
 
             modelBuilder
                 .Entity<Animal>()
                 .Property(x => x.SomeSecretInformation)
-                .HasColumnName("SecretInformation")
+                .HasColumnName("secret_information")
                 .HasDefaultValueSql("gen_random_uuid()");
 
             modelBuilder
@@ -47,26 +52,40 @@ namespace Infrastructure.ContextsDb
                 .HasForeignKey(x => x.EmployeeId)
                 .OnDelete(DeleteBehavior.SetNull);
                 
+            modelBuilder
+                .Entity<Animal>()
+                .Property(x => x.EmployeeId)
+                .HasColumnName("employee_id");
 
             // Настройка модели (таблицы в БД) сотрудников
             modelBuilder
                 .Entity<Employee>()
-                .ToTable("Employees");
+                .ToTable("employees");
 
             modelBuilder
                 .Entity<Employee>()
                 .HasKey(X => X.Id);
 
+            modelBuilder 
+                .Entity<Employee>()
+                .Property(x => x.Id)
+                .HasColumnName("id");
+
             modelBuilder
                 .Entity<Employee>()
                 .Property(x => x.Name)
-                .HasColumnName("Name");
+                .HasColumnName("name");
 
             modelBuilder
                 .Entity<Employee>()
                 .Property(x => x.Position)
                 .HasConversion<string>()
-                .HasColumnName("Position");
+                .HasColumnName("position");
+
+            modelBuilder
+                .Entity<Employee>()
+                .Property(x => x.Limit)
+                .HasColumnName("animal_limit");
         }
     }
 }
