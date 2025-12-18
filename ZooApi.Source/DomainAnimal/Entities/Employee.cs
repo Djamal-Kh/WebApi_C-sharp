@@ -72,7 +72,7 @@ namespace DomainAnimal.Entities
 
             if (animal.EmployeeId != null)
             {
-                if (animal.EmployeeId != this.Id)
+                if (animal.EmployeeId == this.Id)
                     return GeneralErrors.ValueIsInvalid($"Животное уже закреплено за этим сотрудником");
 
                 return GeneralErrors.ValueIsInvalid($"Животное уже закреплено за другим сотрудником с ID = {animal.EmployeeId} ");

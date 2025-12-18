@@ -75,7 +75,7 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
             _logger.LogInformation("Successfully assigned Animal with Id {AnimalId} to Employee with Id {EmployeeId}",
                         command.animalId, command.employeeId);
 
-            return $"Employee с id {command.employeeId} успешно привязан к Animal с id {command.animalId}";
+            return $"Employee с id {command.employeeId} successfully attached to animal with id {command.animalId}";
         }
     }
 }

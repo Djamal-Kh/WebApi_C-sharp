@@ -71,7 +71,7 @@ namespace WebApiAnimal.Controllers
             return Ok(result);
         }
 
-        [HttpGet("employees-by-positions/{position}")]
+        [HttpGet("by-positions/{position}")]
         public async Task<IActionResult> GetEmployeesByPositions(
             [FromServices] GetEmployeesByPositionsHandler handler,
             [FromRoute] EnumEmployeePosition position,

@@ -90,14 +90,14 @@ namespace Infrastructure.Repositories
 
         public async Task<int> RemoveBoundAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
         {
-            int? removedEmoloyeeId = animal.EmployeeId;
+            int? removedEmployeeId = animal.EmployeeId;
 
             await context.Animals
                 .Where(a => a.Id == animal.Id)
                 .ExecuteUpdateAsync(x =>
                     x.SetProperty(a => a.EmployeeId, desE => null));
 
-            return removedEmoloyeeId ?? -1;
+            return removedEmployeeId ?? -1;
         }
 
         public async Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default)

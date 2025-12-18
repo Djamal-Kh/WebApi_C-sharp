@@ -123,9 +123,9 @@ namespace ApplicationAnimal.Services.Animals
                 return GeneralErrors.ValueIsInvalid($"No employee for animal with id {id}").ToErrors();
             }
 
-            int removedEmoloyeeId = await _animalRepository.RemoveBoundAnimalAsync(animal, cancellationToken);
+            int removedEmployeeId = await _animalRepository.RemoveBoundAnimalAsync(animal, cancellationToken);
 
-            if(removedEmoloyeeId == -1)
+            if(removedEmployeeId == -1)
             {
                 return GeneralErrors.Failure("Failed to unbind employee from animal").ToErrors();
             }
