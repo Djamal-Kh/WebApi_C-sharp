@@ -20,7 +20,7 @@ namespace DataAccess.Migrations
                     Type = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     EnergyOfAnimal = table.Column<int>(type: "integer", nullable: false),
-                    AnimalType = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false)
+                    EnumAnimalType = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false)
                 },
                 constraints: table =>
                 {

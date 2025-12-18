@@ -50,6 +50,9 @@ namespace DataAccess.Migrations
                         .HasColumnName("secret_information")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
                     b.Property<string>("animal_type")
                         .IsRequired()
                         .HasMaxLength(8)

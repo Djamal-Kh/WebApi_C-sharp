@@ -19,17 +19,21 @@ namespace ApplicationAnimal.Services.Animals
             _animalRepository = animalRepository;
         }
 
-        public async Task<Result<Animal, Errors>> AddAnimalAsync(EnumAnimalType animalType, string nameOfAnimal, CancellationToken cancellationToken = default)
+        public async Task<Result<Animal, Errors>> AddAnimalAsync(string type, string name, CancellationToken cancellationToken = default)
         {
-            bool isDuplicateName = await _animalRepository.isDuplicateNameAsync(nameOfAnimal, cancellationToken);
+            bool isDuplicateName = await _animalRepository.isDuplicateNameAsync(name, cancellationToken);
 
             if (isDuplicateName)
             {
-                _logger.LogWarning("Attempt to create an animal with Name {Name} is failed: Name duplication !", nameOfAnimal);
-                return GeneralErrors.ValueAlreadyExists(nameOfAnimal).ToErrors();
+                _logger.LogWarning("Attempt to create an animal with Name {Name} is failed: Name duplication !", name);
+                return GeneralErrors.ValueAlreadyExists(name).ToErrors();
             }
 
-            Animal newAnimal = AnimalFactory.Create(animalType, nameOfAnimal);
+            EnumAnimalType enumType = (EnumAnimalType)Enum.Parse(
+                typeof(EnumAnimalType), type, ignoreCase: true);
+
+            Animal newAnimal = AnimalFactory.Create(enumType, name);
+
             await _animalRepository.AddAnimalAsync(newAnimal, cancellationToken);
 
             return newAnimal;
@@ -45,25 +49,40 @@ namespace ApplicationAnimal.Services.Animals
             return animals;
         }
 
+        public async Task<Result<List<EnumAnimalTypeCountDto>, Errors>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
+        {
+            var animalsByType = await _animalRepository.GetNumberAnimalsByType(cancellationToken);
+
+            if (!animalsByType.Any())
+            {
+                return GeneralErrors.CollectionEmpty().ToErrors();
+            }
+
+            return animalsByType;
+        }
+
+        public async Task<Result<List<Animal>, Errors>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
+        {
+            var ownerlessAnimals = await _animalRepository.GetOwnerlessAnimals(cancellationToken);
+
+            if (!ownerlessAnimals.Any())
+            {
+                return GeneralErrors.CollectionEmpty().ToErrors();
+            }
+
+            return ownerlessAnimals;
+        }
+
         public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+
             if (animal is null)
             {
                 return GeneralErrors.NotFound(id).ToErrors();
             }
 
             return animal;
-        }
-
-        public Task<Result<List<AnimalTypeCountDto>, Errors>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Result<List<Animal>, Errors>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
@@ -79,6 +98,7 @@ namespace ApplicationAnimal.Services.Animals
         public async Task<Result<string, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
             var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+
             if (animal is null)
             {
                 return GeneralErrors.NotFound(id).ToErrors();
@@ -89,9 +109,28 @@ namespace ApplicationAnimal.Services.Animals
             return $"The animal with {id} was removed";
         }
 
-        public Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken = default)
+        public async Task<Result<string, Errors>> RemoveBoundAnimalAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+
+            if (animal is null)
+            {
+                return GeneralErrors.NotFound(id).ToErrors();
+            }
+
+            if (animal.EmployeeId is null)
+            {
+                return GeneralErrors.ValueIsInvalid($"No employee for animal with id {id}").ToErrors();
+            }
+
+            int removedEmoloyeeId = await _animalRepository.RemoveBoundAnimalAsync(animal, cancellationToken);
+
+            if(removedEmoloyeeId == -1)
+            {
+                return GeneralErrors.Failure("Failed to unbind employee from animal").ToErrors();
+            }
+
+            return $"The employee was unbound from animal with id {id}";
         }
     }
 }

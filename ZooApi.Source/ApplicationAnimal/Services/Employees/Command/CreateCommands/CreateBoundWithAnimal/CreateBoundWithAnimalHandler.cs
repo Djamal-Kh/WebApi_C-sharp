@@ -29,6 +29,7 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
             _logger.LogInformation("Handling CreateBoundWithAnimalCommand for EmployeeId: {EmployeeId} and AnimalId: {AnimalId}",
                 command.employeeId, command.animalId);
 
+            // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
             if (!validationResult.IsValid)
@@ -39,7 +40,8 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
                 return validationResult.ToList();
             }
 
-            Animal animal = await _animalRepository.GetAnimalByIdAsync(command.animalId, cancellationToken);
+            // поиск сущностей в БД
+            Animal? animal = await _animalRepository.GetAnimalByIdAsync(command.animalId, cancellationToken);
 
             if (animal == null)
             {
@@ -49,7 +51,7 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
                 return GeneralErrors.NotFound().ToErrors();
             }
                 
-            Employee employee = await _employeeRepository.GetByIdWithAnimalsAsync(command.employeeId, cancellationToken);
+            Employee? employee = await _employeeRepository.GetByIdWithAnimalsAsync(command.employeeId, cancellationToken);
 
             if (employee == null)
             {
@@ -59,6 +61,7 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
                 return GeneralErrors.NotFound().ToErrors(); 
             }
 
+            // привязка животного к сотруднику
             var result = await _employeeRepository.AssignAnimalToEmployeeAsync(employee, animal, cancellationToken);
 
             if (result.IsFailure)

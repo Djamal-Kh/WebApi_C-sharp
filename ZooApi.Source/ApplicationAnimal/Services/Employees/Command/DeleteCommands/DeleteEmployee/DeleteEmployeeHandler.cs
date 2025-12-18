@@ -41,6 +41,7 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmpl
                 return validationResult.ToList();
             }
 
+            // Удаление сотрудника
             var result = await _employeeRepository.FireEmployeeAsync(command.employeeId, cancellationToken);
 
             if (result.IsFailure)

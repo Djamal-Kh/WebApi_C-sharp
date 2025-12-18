@@ -33,7 +33,7 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AnimalType")
+                    b.Property<string>("EnumAnimalType")
                         .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)");
@@ -61,7 +61,7 @@ namespace DataAccess.Migrations
 
                     b.ToTable("AnimalsOfZoo", (string)null);
 
-                    b.HasDiscriminator<string>("AnimalType").HasValue("Animal");
+                    b.HasDiscriminator<string>("EnumAnimalType").HasValue("Animal");
 
                     b.UseTphMappingStrategy();
                 });

@@ -113,7 +113,7 @@ namespace WebApiAnimal.Tests.ValidationsWebLayer
         [Fact]
         public void Type_NullOrEmpty_ShouldFailValidation()
         {
-            // Не знаю как проверить, т.к. type (AnimalType) не может быть равен null
+            // Не знаю как проверить, т.к. type (EnumAnimalType) не может быть равен null
         }
 
         [Theory]

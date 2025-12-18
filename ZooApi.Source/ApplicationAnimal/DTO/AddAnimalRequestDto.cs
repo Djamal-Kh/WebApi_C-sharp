@@ -5,8 +5,7 @@ namespace ZooApi.DTO
 {
     public sealed record AddAnimalRequestDto
     {
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public EnumAnimalType Type { get; set; }
+        public string Type { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
     }
 }

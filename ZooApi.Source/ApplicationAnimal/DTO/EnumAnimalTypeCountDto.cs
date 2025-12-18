@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Common.DTO
 {
-    public sealed record AnimalTypeCountDto
+    public sealed record EnumAnimalTypeCountDto
     {
-        AnimalType Type { get; set; }
-        int Count { get; set; }
+        public EnumAnimalType Type { get; set; }
+        public int Count { get; set; }
 
-        public AnimalTypeCountDto(AnimalType type, int count)
+        public EnumAnimalTypeCountDto(EnumAnimalType type, int count)
         {
             Type = type;
             Count = count;

@@ -1,13 +1,12 @@
 ﻿using DomainAnimal.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DomainAnimal.Entities
 {
     public enum EnumAnimalType
     {
         Lion = 1,
-        Monkey,
+        Monkey = 2,
     }
 
     public abstract class Animal : IAnimal
@@ -16,7 +15,6 @@ namespace DomainAnimal.Entities
 
         [Key]
         public int Id { get; protected set; }
-        [NotMapped]
         public EnumAnimalType Type { get; protected set; }
         public string Name { get; protected set; }
         public int Energy { get; protected set; }
@@ -26,6 +24,7 @@ namespace DomainAnimal.Entities
 
         // конструктор без параметров для EF Core
         protected Animal() { }
+
         protected Animal(EnumAnimalType type, string name, int energy)
         {
             if(string.IsNullOrWhiteSpace(name))

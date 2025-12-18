@@ -1,5 +1,4 @@
-﻿
-using ApplicationAnimal.Common.DTO;
+﻿using ApplicationAnimal.Common.DTO;
 using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal;
 using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee;
 using ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmployee;
@@ -32,7 +31,9 @@ namespace WebApiAnimal.Controllers
                 return BadRequest(result.Error);
             }
 
-            return Ok(result.Value);
+            int createdEmployeeId = result.Value;
+
+            return Ok(createdEmployeeId);
         }
 
         [HttpGet]
@@ -41,6 +42,7 @@ namespace WebApiAnimal.Controllers
             CancellationToken cancellationToken)
         {
             var result = await handler.Handle(cancellationToken);
+
             return Ok(result);
         }
 
@@ -51,6 +53,7 @@ namespace WebApiAnimal.Controllers
             CancellationToken cancellationToken)
         {
             var result = await handler.Handle(employeeId, cancellationToken);
+
             if (result is null)
             {
                 return NotFound();
@@ -60,7 +63,7 @@ namespace WebApiAnimal.Controllers
         }
 
         [HttpGet("employees-without-animals")]
-        public async Task<IActionResult> GetEmployeesWithAnimals(
+        public async Task<IActionResult> GetEmployeesWithoutAnimals(
             [FromServices] GetEmployeesWithoutAnimalsHandler handler,
             CancellationToken cancellationToken)
         {
@@ -94,12 +97,14 @@ namespace WebApiAnimal.Controllers
                 return BadRequest(result.Error);
             }
 
-            return Ok(result.Value);
+            string boundInfo = result.Value;
+
+            return Ok(boundInfo);
         }
 
         [HttpPatch("employees/{employeeId}/promote")]
         public async Task<IActionResult> PromoteEmployee(
-            [FromServices] ICommandHandler<int, PromoteEmployeeCommand> handler,
+            [FromServices] ICommandHandler<EnumEmployeePosition, PromoteEmployeeCommand> handler,
             [FromRoute] int employeeId,
             CancellationToken cancellationToken)
         {
@@ -112,12 +117,14 @@ namespace WebApiAnimal.Controllers
                 return BadRequest(result.Error); 
             }
 
-            return Ok(result.Value);
+            EnumEmployeePosition newPositionLevel = result.Value;
+
+            return Ok(newPositionLevel);
         }
 
         [HttpPatch("employees/{employeeId}/demote")]
         public async Task<IActionResult> DemoteEmployee(
-            [FromServices] ICommandHandler<int, DemoteEmployeeCommand> handler,
+            [FromServices] ICommandHandler<EnumEmployeePosition, DemoteEmployeeCommand> handler,
             [FromRoute] int employeeId,
             CancellationToken cancellationToken)
         {
@@ -130,7 +137,9 @@ namespace WebApiAnimal.Controllers
                 return BadRequest(result.Error);
             }
 
-            return Ok(result.Value);
+            EnumEmployeePosition newPositionLevel = result.Value;
+
+            return Ok(newPositionLevel);
         }
 
         [HttpDelete("employees/{employeeId}/deleteEmployee")]

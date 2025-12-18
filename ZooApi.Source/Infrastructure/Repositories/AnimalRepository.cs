@@ -2,6 +2,7 @@
 using ApplicationAnimal.Services.Animals;
 using CSharpFunctionalExtensions;
 using DomainAnimal.Entities;
+using DomainAnimal.Interfaces;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,26 +27,25 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Animal?> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var animal = await context.Animals.FindAsync(id);
-
-            return animal;
-        }
-
-        public async Task<List<AnimalTypeCountDto>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
+        public async Task<List<EnumAnimalTypeCountDto>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
         {
             return await context.Animals
                 .GroupBy(t => t.Type)
-                .Select(a => new AnimalTypeCountDto(a.Key, a.Count()))
+                .Select(a => new EnumAnimalTypeCountDto(a.Key, a.Count()))
                 .ToListAsync();
         }
 
         public async Task<List<Animal>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
         {
             var ownerlessAnimals = await context.Animals.Where(ei => ei.EmployeeId == null).ToListAsync();
-            var count = ownerlessAnimals.Count; // потом добавить в ответ count чтобы клиент получал и список бесхозных животных и их количество
             return ownerlessAnimals;
+        }
+
+        public async Task<Animal?> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var animal = await context.Animals.FindAsync(id);
+
+            return animal;
         }
 
         public async Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken = default)
@@ -82,16 +82,24 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task<Result<bool, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default)
+        public async Task DeleteAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
         {
-            var deleteAnimal = await context.Animals
-                .Where(a => a.Id == id)
-                .ExecuteDeleteAsync();
+            context.Animals.Remove(animal);
+            await context.SaveChangesAsync();
+        }
 
-            if (deleteAnimal == 0)
-                return GeneralErrors.NotFound().ToErrors();
+        public async Task<int> RemoveBoundAnimalAsync(Animal animal, CancellationToken cancellationToken = default)
+        {
+            int? removedEmoloyeeId = animal.EmployeeId;
 
-        
+            await context.Animals
+                .Where(a => a.Id == animal.Id)
+                .ExecuteUpdateAsync(x =>
+                    x.SetProperty(a => a.EmployeeId, desE => null));
+
+            return removedEmoloyeeId ?? -1;
+        }
+
         public async Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default)
         {
             bool exist = await context.Animals.AnyAsync(n => n.Name == name);
@@ -104,11 +112,6 @@ namespace Infrastructure.Repositories
             await context.Animals.Where(E => E.Energy > 0 && E.Energy >= decrementValue)
                 .ExecuteUpdateAsync(x => 
                     x.SetProperty(E => E.Energy, desE => desE.Energy - decrementValue));
-        }
-
-        public Task RemoveBoundAnimalAsync(int animalId, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
     }
 }

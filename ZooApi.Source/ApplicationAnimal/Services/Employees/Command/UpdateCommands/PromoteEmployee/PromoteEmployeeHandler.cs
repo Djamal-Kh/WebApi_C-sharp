@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmployee
 {
-    public sealed class PromoteEmployeeHandler : ICommandHandler<int, PromoteEmployeeCommand>
+    public sealed class PromoteEmployeeHandler : ICommandHandler<EnumEmployeePosition, PromoteEmployeeCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<PromoteEmployeeHandler> _logger;
@@ -26,7 +26,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmp
             _validator = validator;
         }
 
-        public async Task<Result<int, Errors>> Handle(PromoteEmployeeCommand command, CancellationToken cancellationToken)
+        public async Task<Result<EnumEmployeePosition, Errors>> Handle(PromoteEmployeeCommand command, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Handling PromoteEmployeeCommand for EmployeeId: {EmployeeId}",
                 command.employeeId);
@@ -42,6 +42,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmp
                 return validationResult.ToList();
             }
 
+            // поиск сотрудника в БД
             var employee = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
 
             if (employee is null)
@@ -51,6 +52,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmp
                 return GeneralErrors.NotFound().ToErrors();
             }
 
+            // повышение сотрудника
             var result = await _employeeRepository.PromotionEmployeeAsync(employee, cancellationToken);
 
             if (result.IsFailure)
@@ -62,7 +64,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmp
             }
 
             _logger.LogInformation("Successfully promoted Employee with Id {EmployeeId}", employee.Id);
-            return employee.Id;
+            return employee.Position;
         }
     }
 }

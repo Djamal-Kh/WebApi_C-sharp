@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using ApplicationAnimal.Common.DTO;
+using ApplicationAnimal.DTO;
+using AutoMapper;
 using DomainAnimal.Entities;
 using WebApiAnimal.DTO;
 using ZooApi.DTO;
@@ -11,6 +13,7 @@ namespace ZooApi.Mapping
         {
             CreateMap<Animal, AnimalResponseDto>();
             CreateMap<Animal, AddAnimalResponseDto>();
+            CreateMap<EnumAnimalTypeCountDto, GetNumberAnimalsTypeResponseDto>();
         }
     }
 

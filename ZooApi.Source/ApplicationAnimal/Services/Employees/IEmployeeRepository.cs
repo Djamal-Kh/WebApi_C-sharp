@@ -15,7 +15,6 @@ namespace ApplicationAnimal.Services.Employees
         Task<UnitResult<Error>> FireEmployeeAsync(int id, CancellationToken cancellationToken);
         Task<Employee?> GetByIdAsync(int employeeId, CancellationToken cancellationToken);  
         Task<Employee?> GetByIdWithAnimalsAsync(int empId, CancellationToken cancellationToken);
-        // мб унифицировать метод для Animal и Employee
         Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default);
     }
 }

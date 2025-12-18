@@ -30,6 +30,7 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllB
             _logger.LogInformation("Handling RemoveAllBoundAnimalsCommand for EmployeeId: {EmployeeId}",
                 command.employeeId);
 
+            // валидация
             var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
             if (!validationResult.IsValid)
@@ -40,6 +41,7 @@ namespace ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllB
                 return validationResult.ToList();
             }
 
+            // удаление всех связанных животных с сотрудником
             var result = await _employeeRepository.RemoveAllBoundAnimalsAsync(command.employeeId, cancellationToken);
             
             if (result.IsFailure)

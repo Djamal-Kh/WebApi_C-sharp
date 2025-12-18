@@ -10,7 +10,7 @@ public static class GeneralErrors
 {
     public static Error ValueIsInvalid(string? name = null)
     {
-        string label = name ?? "значение";
+        string label = name ?? ". Значение";
         return Error.Validation("value.is.invalid", $"{label} недействительно");
     }
 

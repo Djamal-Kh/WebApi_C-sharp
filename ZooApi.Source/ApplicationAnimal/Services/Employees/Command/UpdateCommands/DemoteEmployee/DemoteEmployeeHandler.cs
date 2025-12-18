@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmployee
 {
-    public sealed class DemoteEmployeeHandler : ICommandHandler<int, DemoteEmployeeCommand>
+    public sealed class DemoteEmployeeHandler : ICommandHandler<EnumEmployeePosition, DemoteEmployeeCommand>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<DemoteEmployeeHandler> _logger;
@@ -27,7 +27,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
             _validator = validator;
         }
 
-        public async Task<Result<int, Errors>> Handle(DemoteEmployeeCommand command, CancellationToken cancellationToken)
+        public async Task<Result<EnumEmployeePosition, Errors>> Handle(DemoteEmployeeCommand command, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Handling DemoteEmployeeCommand for EmployeeId: {EmployeeId}",
                 command.employeeId);
@@ -43,6 +43,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
                 return validationResult.ToList();
             }
 
+            // поиск сотрудника в БД
             var employee = await _employeeRepository.GetByIdAsync(command.employeeId, cancellationToken);
 
             if (employee is null)
@@ -51,6 +52,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
                 return GeneralErrors.NotFound().ToErrors();
             }
 
+            // понижение сотрудника
             var result = await _employeeRepository.DemotionEmployeeAsync(employee, cancellationToken);
 
             if (result.IsFailure)
@@ -62,7 +64,7 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
             }
 
             _logger.LogInformation("Successfully demoted Employee with Id {EmployeeId}", employee.Id);
-            return employee.Id;
+            return employee.Position;
         }
     }
 }
