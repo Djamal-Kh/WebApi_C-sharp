@@ -1,24 +1,25 @@
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 
-COPY ["ZooApi/ZooApi.csproj", "ZooApi/"]
-COPY ["DataAccess/DataAccess.csproj", "DataAccess/"]
-COPY ["LibraryAnimals/LibraryAnimals.csproj", "LibraryAnimals/"] 
+COPY ["ZooApi.Source/WebApiAnimal/WebApiAnimal.csproj", "ZooApi.Source/WebApiAnimal/"]
+COPY ["ZooApi.Source/DomainAnimal/DomainAnimal.csproj", "ZooApi.Source/DomainAnimal/"]
+COPY ["ZooApi.Source/ApplicationAnimal/ApplicationAnimal.csproj", "ZooApi.Source/ApplicationAnimal/"] 
+COPY ["ZooApi.Source/Shared/Shared.csproj", "ZooApi.Source/Shared/"] 
 
 
-RUN dotnet restore "ZooApi/ZooApi.csproj"
+RUN dotnet restore "ZooApi.Source/WebApiAnimal/WebApiAnimal.csproj"
 
 
 COPY . .
 
 
-WORKDIR "/src/ZooApi"
-RUN dotnet publish "ZooApi.csproj" -c Release -o /app/publish
+WORKDIR "/src/ZooApi.Source/WebApiAnimal"
+RUN dotnet publish "WebApiAnimal.csproj" -c Release -o /app/publish
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "ZooApi.dll"]
+ENTRYPOINT ["dotnet", "WebApiAnimal.dll"]

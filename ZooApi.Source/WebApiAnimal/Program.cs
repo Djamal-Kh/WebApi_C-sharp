@@ -1,15 +1,6 @@
-global using CSharpFunctionalExtensions;
 using ApplicationAnimal.BackgroundServ;
 using ApplicationAnimal.Common.Abstractions;
-using ApplicationAnimal.Common.DTO;
-using ApplicationAnimal.Services.Animals;
-using ApplicationAnimal.Services.Employees;
-using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal;
 using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee;
-using ApplicationAnimal.Services.Employees.Command.DeleteCommands.DeleteEmployee;
-using ApplicationAnimal.Services.Employees.Command.DeleteCommands.RemoveAllBoundAnimals;
-using ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmployee;
-using ApplicationAnimal.Services.Employees.Command.UpdateCommands.PromoteEmployee;
 using FluentValidation;
 using Infrastructure;
 using Infrastructure.ContextsDb;
@@ -23,11 +14,8 @@ using ZooApi.DTO;
 using ZooApi.Mapping;
 using ZooApi.Middlewares;
 using ZooApi.Validations;
-using Scrutor;
-using System.Reflection;
 using ApplicationAnimal.Services.Employees.Queries;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-
+using ApplicationAnimal.Services.Caching;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -49,7 +37,7 @@ builder.Services.AddHttpLogging(logging =>
     logging.LoggingFields = HttpLoggingFields.All;
 });
 
-//builder.WebHost.UseUrls("http://0.0.0.0:8080"); // - хост, использующийся в Docker. Также для запуска с Docker, необходимо в appsettings.json заменить localhost на postgre_db
+builder.WebHost.UseUrls("http://0.0.0.0:8080"); // - хост, использующийся в Docker. Также для запуска с Docker, необходимо в appsettings.json заменить localhost на postgre_db
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(AnimalProfile));
@@ -67,6 +55,7 @@ builder.Services.AddScoped<GetEmployeeByIdHandler>();
 builder.Services.AddScoped<GetEmployeesByPositionsHandler>();
 builder.Services.AddScoped<GetEmployeesHandler>(); 
 builder.Services.AddScoped<GetEmployeesWithoutAnimalsHandler>();
+builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 
 // Использование Scrutor для регистрации Application (РАСПИШИ В OBSIDIAN !) 
 builder.Services.Scan(selector => selector
@@ -113,6 +102,12 @@ builder.Services.AddDbContext<AppContextDB>(
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString("AppContextDb"));
     });
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "ZooApi_";
+});
 
 var app = builder.Build();
 

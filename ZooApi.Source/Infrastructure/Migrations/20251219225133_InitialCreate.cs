@@ -4,10 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DataAccess.Migrations
+namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FinalSnakeCaseUpdate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace DataAccess.Migrations
                 name: "employees",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "text", nullable: false),
                     position = table.Column<string>(type: "text", nullable: false),
@@ -24,36 +24,37 @@ namespace DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_employees", x => x.Id);
+                    table.PrimaryKey("PK_employees", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "animals",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Type = table.Column<int>(type: "integer", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     energy = table.Column<int>(type: "integer", nullable: false),
                     secret_information = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    EmployeeId = table.Column<int>(type: "integer", nullable: true),
+                    employee_id = table.Column<int>(type: "integer", nullable: true),
                     animal_type = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_animals", x => x.Id);
+                    table.PrimaryKey("PK_animals", x => x.id);
                     table.ForeignKey(
-                        name: "FK_animals_employees_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_animals_employees_employee_id",
+                        column: x => x.employee_id,
                         principalTable: "employees",
-                        principalColumn: "Id",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_animals_EmployeeId",
+                name: "IX_animals_employee_id",
                 table: "animals",
-                column: "EmployeeId");
+                column: "employee_id");
         }
 
         /// <inheritdoc />

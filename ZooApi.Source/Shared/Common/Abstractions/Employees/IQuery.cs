@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shared.Common.Abstractions.Employees
+﻿namespace Shared.Common.Abstractions.Employees
 {
     public interface IQuery<TResponse>
     {

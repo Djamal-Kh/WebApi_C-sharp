@@ -14,8 +14,10 @@ services:
       - deploy-guide-dev
     depends_on:
       - postgres_db
+      - redis
     environment:
       - ConnectionStrings__AppContextDb=Host=postgres_db;Port=5432;Database=ZooDb;Username=postgres;Password=admin2
+      - ConnectionStrings__Redis=redis:6379
 
   postgres_db:
     container_name: postgres
@@ -31,10 +33,14 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data 
 
+  redis:
+    container_name: redis
+    image: redis:7.0.12
+    ports:
+      - "6379:6379"
+    networks:
+      - deploy-guide-dev
+
 volumes:
   postgres-data:
-
-        
-    
-
-
+  redis-data:

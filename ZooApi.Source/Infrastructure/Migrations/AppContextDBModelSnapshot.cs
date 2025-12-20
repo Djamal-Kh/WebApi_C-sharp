@@ -3,20 +3,17 @@ using System;
 using Infrastructure.ContextsDb;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace DataAccess.Migrations
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppContextDB))]
-    [Migration("20251211173117_FixIdColumns")]
-    partial class FixIdColumns
+    partial class AppContextDBModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,6 +49,9 @@ namespace DataAccess.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("secret_information")
                         .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.Property<string>("animal_type")
                         .IsRequired()

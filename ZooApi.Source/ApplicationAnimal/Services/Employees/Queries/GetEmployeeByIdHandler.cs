@@ -1,25 +1,34 @@
 ﻿using ApplicationAnimal.Common.Abstractions;
 using ApplicationAnimal.Common.DTO;
+using ApplicationAnimal.Services.Caching;
 using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationAnimal.Services.Employees.Queries
 {
     public sealed class GetEmployeeByIdHandler
     {
         private readonly IDbConnectionFactory _connectionFactory;
+        private readonly IRedisCacheService _cache;
+        private readonly ILogger<GetEmployeeByIdHandler> _logger;
 
-        public GetEmployeeByIdHandler(IDbConnectionFactory connectionFactory)
+        public GetEmployeeByIdHandler(IDbConnectionFactory connectionFactory, IRedisCacheService cache, ILogger<GetEmployeeByIdHandler> logger)
         {
             _connectionFactory = connectionFactory;
+            _cache = cache;
+            _logger = logger;
         }
 
         public async Task<EmployeeDto?> Handle(int id, CancellationToken cancellationToken)
         {
+            var employee = _cache.GetData<EmployeeDto>($"employee:id:{id}");
+
+            if ( employee is not null)
+            {
+                _logger.LogInformation("Employee with id {EmployeeId} found in cache", id);
+                return employee;
+            }
+
             var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
 
             const string sql =
@@ -34,7 +43,13 @@ namespace ApplicationAnimal.Services.Employees.Queries
 
             var param = new { EmployeeId = id };
 
-            var employee = await connection.QuerySingleOrDefaultAsync<EmployeeDto>(sql, param);
+            employee = await connection.QuerySingleOrDefaultAsync<EmployeeDto>(sql, param);
+
+            if (employee is not null)
+            {
+                _logger.LogInformation("Employee with id {EmployeeId} added in cache", id);
+                _cache.SetData($"employee:id:{id}", employee);
+            }
 
             return employee;
         }
