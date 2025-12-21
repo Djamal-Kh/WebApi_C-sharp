@@ -21,12 +21,13 @@ namespace ApplicationAnimal.Services.Employees.Queries
 
         public async Task<EmployeeDto?> Handle(int id, CancellationToken cancellationToken)
         {
-            var employee = _cache.GetData<EmployeeDto>($"employee:id:{id}");
+            // Кэширование сотрудника по id
+            var employeeFromCache = await _cache.GetAsync<EmployeeDto>($"employee:id:{id}", cancellationToken);
 
-            if ( employee is not null)
+            if (employeeFromCache is not null)
             {
-                _logger.LogInformation("Employee with id {EmployeeId} found in cache", id);
-                return employee;
+                _logger.LogInformation("Employee with id {EmployeeId} retrieved from cache", id);
+                return employeeFromCache;
             }
 
             var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
@@ -43,12 +44,12 @@ namespace ApplicationAnimal.Services.Employees.Queries
 
             var param = new { EmployeeId = id };
 
-            employee = await connection.QuerySingleOrDefaultAsync<EmployeeDto>(sql, param);
+            var employee = await connection.QuerySingleOrDefaultAsync<EmployeeDto>(sql, param);
 
             if (employee is not null)
             {
                 _logger.LogInformation("Employee with id {EmployeeId} added in cache", id);
-                _cache.SetData($"employee:id:{id}", employee);
+                await _cache.SetAsync($"employee:id:{id}", employee, cancellationToken);
             }
 
             return employee;

@@ -37,13 +37,13 @@ builder.Services.AddHttpLogging(logging =>
     logging.LoggingFields = HttpLoggingFields.All;
 });
 
-builder.WebHost.UseUrls("http://0.0.0.0:8080"); // - хост, использующийся в Docker. Также для запуска с Docker, необходимо в appsettings.json заменить localhost на postgre_db
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(AnimalProfile));
 builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<DecrementAnimalEnergyAsync>();
-builder.Services.AddScoped<CacheAttribute>();
+builder.Services.AddScoped<CacheAttributeForHttpGet>();
 
 var webApiAssembly = typeof(AddAnimalRequestDto).Assembly;
 var applicationAssembly = typeof(CreateEmployeeHandler).Assembly;
@@ -97,17 +97,24 @@ builder.Services.Scan(selector => selector
 
 builder.Services.AddSingleton<IDbConnectionFactory, NpsqlConnectionFactory>();
 
-builder.Services.AddDbContext<AppContextDB>(
+var dbContext = builder.Services.AddDbContext<AppContextDB>(
     options =>
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString("AppContextDb"));
     });
 
-builder.Services.AddStackExchangeRedisCache(options =>
+var redisConnectionString = builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "ZooApi_";
 });
+
+if (dbContext is null || redisConnectionString is null)
+{
+    Log.Fatal("Database or Redis Cache connection string is null");
+    throw new InvalidOperationException("Database or Redis Cache connection string is null");
+}
+
 
 var app = builder.Build();
 

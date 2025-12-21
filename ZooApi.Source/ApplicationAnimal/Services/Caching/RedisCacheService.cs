@@ -8,15 +8,15 @@ namespace ApplicationAnimal.Services.Caching
 {
     public class RedisCacheService : IRedisCacheService
     {
-        private readonly IDistributedCache? _cache;
+        private readonly IDistributedCache _cache;
 
         public RedisCacheService(IDistributedCache cache)
         {
             _cache = cache;
         }
-        public T? GetData<T>(string key)
+        public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken)
         {
-            var data = _cache?.GetString(key);
+            var data = await _cache.GetStringAsync(key, cancellationToken);
 
             if (data is null)
             {
@@ -26,15 +26,18 @@ namespace ApplicationAnimal.Services.Caching
             return JsonSerializer.Deserialize<T>(data);
         }
 
-        public void SetData<T>(string key, T data)
+        public async Task SetAsync<T>(string key, T data, CancellationToken cancellationToken, int absoluteTTL = 3, int slidingTTL = 1)
         {
-            var optins = new DistributedCacheEntryOptions()
-                // запись удалится через 10 минут независимо от активности
-                .SetAbsoluteExpiration(DateTime.Now.AddMinutes(10))
-                // запись удалится, если в течение 2 минут к ней не будет обращений
-                .SetSlidingExpiration(TimeSpan.FromMinutes(2));
+            var options = new DistributedCacheEntryOptions()
+                .SetAbsoluteExpiration(DateTimeOffset.UtcNow.AddMinutes(absoluteTTL))
+                .SetSlidingExpiration(TimeSpan.FromMinutes(slidingTTL));
 
-            _cache?.SetString(key, JsonSerializer.Serialize(data), optins);
+            await _cache.SetStringAsync(key, JsonSerializer.Serialize(data), options, cancellationToken);
+        }
+
+        public async Task RemoveDataAsync(string key)
+        {
+            await _cache.RemoveAsync(key);
         }
     }
 }
