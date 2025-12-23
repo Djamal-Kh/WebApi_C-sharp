@@ -2,7 +2,9 @@
 using ApplicationAnimal.Common.DTO;
 using ApplicationAnimal.Services.Caching;
 using Dapper;
+using DomainAnimal;
 using DomainAnimal.Entities;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -15,11 +17,11 @@ namespace ApplicationAnimal.Services.Employees.Queries
     public sealed class GetEmployeesHandler
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly IRedisCacheService _cache;
+        private readonly HybridCache _cache;
         private readonly ILogger<GetEmployeesHandler> _logger;
 
         public GetEmployeesHandler(IDbConnectionFactory connectionFactory,
-            IRedisCacheService cache,
+            HybridCache cache,
             ILogger<GetEmployeesHandler> logger)
         {
             _connectionFactory = connectionFactory;
@@ -29,37 +31,43 @@ namespace ApplicationAnimal.Services.Employees.Queries
 
         public async Task<GetEmployeesDto> Handle(CancellationToken cancellationToken)
         {
-            // Проверка наличия данных в кэше
-            var employeesFromCache = await _cache.GetAsync<List<EmployeeDto>>("employees_all", cancellationToken);
+            string cacheKey = "employee:employees_all";
 
-            if (employeesFromCache is not null)
+            var options = new HybridCacheEntryOptions
             {
-                _logger.LogInformation("All employees retrieved from cache");
-                return new GetEmployeesDto(employeesFromCache);
-            }
-            // Подкючение к БД и SQL запрос с помощью Dapper`а
-            var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+                LocalCacheExpiration = TimeSpan.FromMinutes(1),
+                Expiration = TimeSpan.FromMinutes(3)
+            };
 
-            const string sql = 
-                """
-                SELECT id, 
-                    name, 
-                    position, 
-                    animal_limit 
-                FROM employees
-                ORDER BY Name;
-                """;
+            var tags = new List<string> { EmployeeConstants.EMPLOYEE_CACHE_TAG };
 
-            // Реализация запроса на получение сотрудников с использованием Dapper
-            var employees = await connection.QueryAsync<EmployeeDto>(sql);
+            var employees = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancel =>
+                {
+                    _logger.LogInformation("Cache miss for key {CacheKey}. Retrieving from database.", cacheKey);
 
-            if (employees is not null)
-            {
-                _logger.LogInformation("All employees added in cache");
-                await _cache.SetAsync("employees_all", employees.ToList(), cancellationToken, 5, 3);
-            }
+                    var connection = await _connectionFactory.CreateConnectionAsync(cancel);
+                    const string sql =
+                        """
+                        SELECT id, 
+                            name, 
+                            position, 
+                            animal_limit 
+                        FROM employees
+                        ORDER BY Name;
+                        """;
 
-            return new GetEmployeesDto(employees.ToList());
+                    var result = await connection.QueryAsync<EmployeeDto>(sql);
+
+                    return result.ToList();
+                },
+                options,
+                tags,
+                cancellationToken: cancellationToken
+            );
+
+            return new GetEmployeesDto(employees);
         }
     }
 }

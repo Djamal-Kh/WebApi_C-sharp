@@ -29,15 +29,15 @@ namespace ApplicationAnimal.Services.Caching
         public async Task SetAsync<T>(string key, T data, CancellationToken cancellationToken, int absoluteTTL = 3, int slidingTTL = 1)
         {
             var options = new DistributedCacheEntryOptions()
-                .SetAbsoluteExpiration(DateTimeOffset.UtcNow.AddMinutes(absoluteTTL))
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(absoluteTTL))
                 .SetSlidingExpiration(TimeSpan.FromMinutes(slidingTTL));
 
             await _cache.SetStringAsync(key, JsonSerializer.Serialize(data), options, cancellationToken);
         }
 
-        public async Task RemoveDataAsync(string key)
+        public async Task RemoveAsync(string key, CancellationToken cancellationToken)
         {
-            await _cache.RemoveAsync(key);
+            await _cache.RemoveAsync(key, cancellationToken);
         }
     }
 }

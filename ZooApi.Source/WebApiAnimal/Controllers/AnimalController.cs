@@ -2,12 +2,8 @@
 using AutoMapper;
 using ZooApi.DTO;
 using FluentValidation;
-using WebApiAnimal.Filters;
-using WebApiAnimal.DTO;
 using DomainAnimal.Entities;
 using ApplicationAnimal.Services.Animals;
-using ApplicationAnimal.Common.DTO;
-using ApplicationAnimal.DTO;
 
 namespace ZooApi.Controllers
 {
@@ -58,21 +54,18 @@ namespace ZooApi.Controllers
                 return BadRequest(result.Error);
             }
 
-            Animal createdAnimal = result.Value;
-
-            var responseDto = _mapper.Map<AddAnimalResponseDto>(createdAnimal);
+            AnimalResponseDto createdAnimal = result.Value;
 
             _logger.LogInformation(
                 "Adding the animal successfully. Property added animal: Id = {Id}, Name = {Name}, Type = {Type}",
-                responseDto.Id, responseDto.Name, responseDto.Type);
+                createdAnimal.Id, createdAnimal.Name, createdAnimal.Type);
 
             return Created(
-                $"/api/animal/{responseDto.Id}",
-                responseDto);
+                $"/api/animal/{createdAnimal.Id}",
+                createdAnimal);
         }
 
         [HttpGet]
-        [TypeFilter(typeof(CacheAttributeForHttpGet))]
         public async Task<IActionResult> GetAllAnimalsAsync()
         {
             _logger.LogInformation("Return list of animals");
@@ -82,19 +75,16 @@ namespace ZooApi.Controllers
             if (result.IsFailure)
                 return Ok(result.Error);
 
-            List<Animal> animals = result.Value;
-
-            var responseDto = _mapper.Map<List<AnimalResponseDto>>(animals);
+            var animals = result.Value;
 
             _logger.LogInformation("Total number of animals = {Count}",
                 animals.Count);
 
-            return Ok(responseDto);
+            return Ok(animals);
         }
 
         [HttpGet]
         [Route("animal-type")]
-        [TypeFilter(typeof(CacheAttributeForHttpGet))]
         public async Task<IActionResult> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Return number of animals by type");
@@ -104,14 +94,11 @@ namespace ZooApi.Controllers
             if (result.IsFailure)
                 return Ok(result.Error);
 
-            var responseDto = _mapper.Map<List<GetNumberAnimalsTypeResponseDto>>(result.Value);
-
-            return Ok(responseDto);
+            return Ok(result.Value);
         }
 
         [HttpGet]
         [Route("ownerless-animals")]
-        [TypeFilter(typeof(CacheAttributeForHttpGet))]
         public async Task<IActionResult> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Return ownerless animals");
@@ -121,11 +108,12 @@ namespace ZooApi.Controllers
             if (result.IsFailure)
                 return Ok(result.Error);
 
-            return Ok(result.Value);
+            var animals = result.Value;
+
+            return Ok(animals);
         }
 
         [HttpGet("{animalId}")]
-        [TypeFilter(typeof(CacheAttributeForHttpGet))]
         public async Task<IActionResult> GetAnimalByIdAsync([FromRoute(Name = "animalId")] int id)
         {
             _logger.LogInformation("Try to return the animal. InputData: Id = {Id}", id);
@@ -137,15 +125,13 @@ namespace ZooApi.Controllers
                 return NotFound(result.Error);
             } 
 
-            Animal animal = result.Value;    
-
-            var responseDto = _mapper.Map<AnimalResponseDto>(animal);
+            AnimalResponseDto animal = result.Value;    
 
             _logger.LogInformation("Property founded animal: " +
                 "Id = {Id}, Name = {Name}, Type = {Type}",
-                responseDto.Id, responseDto.Name, responseDto.Type);
+                animal.Id, animal.Name, animal.Type);
 
-            return Ok(responseDto);
+            return Ok(animal);
         }
 
         [HttpPatch("{animalId}")]

@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
                 .ExecuteDeleteAsync();
 
             if (exists == 0)
-                return GeneralErrors.ValueIsInvalid();
+                return GeneralErrors.NotFound();
 
             return UnitResult.Success<Error>();
         }

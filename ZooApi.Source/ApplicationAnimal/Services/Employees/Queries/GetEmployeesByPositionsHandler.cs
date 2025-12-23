@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ApplicationAnimal.Services.Caching;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Hybrid;
+using DomainAnimal;
 
 namespace ApplicationAnimal.Services.Employees.Queries
 {
@@ -16,11 +18,11 @@ namespace ApplicationAnimal.Services.Employees.Queries
     public sealed class GetEmployeesByPositionsHandler
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly IRedisCacheService _cache;
+        private readonly HybridCache _cache;
         private readonly ILogger<GetEmployeesByPositionsHandler> _logger;
 
         public GetEmployeesByPositionsHandler(IDbConnectionFactory connectionFactory, 
-            IRedisCacheService cache,
+            HybridCache cache,
             ILogger<GetEmployeesByPositionsHandler> logger)
         {
             _connectionFactory = connectionFactory;
@@ -30,38 +32,46 @@ namespace ApplicationAnimal.Services.Employees.Queries
         
         public async Task<GetEmployeesDto> Handle(EnumEmployeePosition position, CancellationToken cancellationToken)
         {
-            var employeesFromCache = await _cache.GetAsync<List<EmployeeDto>>($"employees_position:{position}", cancellationToken);
+            string cacheKey = $"employee:employees_position:{position}";
 
-            if (employeesFromCache is not null)
+            var options = new HybridCacheEntryOptions
             {
-                _logger.LogInformation("Employees with position {position} retrieved from cache", position);
-                return new GetEmployeesDto(employeesFromCache);
-            }
-                
+                LocalCacheExpiration = TimeSpan.FromMinutes(1),
+                Expiration = TimeSpan.FromMinutes(3), 
 
-            var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
+            };
 
-            const string sql =
-                """
-                SELECT id,
-                    name,
-                    position,
-                    animal_limit
-                FROM employees
-                Where position = @EmployeePosition
-                """;
-            
-            var param = new {EmployeePosition = position.ToString()};
+            var tags = new List<string> { EmployeeConstants.EMPLOYEE_CACHE_TAG };
 
-            var employees = await connection.QueryAsync<EmployeeDto>(sql, param);
+            var employees = await _cache.GetOrCreateAsync<List<EmployeeDto>>(
+                cacheKey,
+                async cancel =>
+                {
+                    _logger.LogInformation("Cache MISS for key {CacheKey}", cacheKey);
 
-            if (employees.Any())
-            {
-                _logger.LogInformation("Employees with position {position} added in cache", position);
-                await _cache.SetAsync($"employees_position:{position}", employees.ToList(), cancellationToken, 5, 3);
-            }
+                    using var connection = await _connectionFactory.CreateConnectionAsync(cancel);
+                    const string sql =
+                        """
+                        SELECT id,
+                            name,
+                            position,
+                            animal_limit
+                        FROM employees
+                        Where position = @EmployeePosition
+                        """;
 
-            return new GetEmployeesDto(employees.ToList());
+                    var param = new { EmployeePosition = position.ToString() };
+
+                    var result = await connection.QueryAsync<EmployeeDto>(sql, param);
+                    
+                    return result.ToList();
+                },
+                options,
+                tags,
+                cancellationToken: cancellationToken
+            );
+
+            return new GetEmployeesDto(employees);
         }
     }
 }

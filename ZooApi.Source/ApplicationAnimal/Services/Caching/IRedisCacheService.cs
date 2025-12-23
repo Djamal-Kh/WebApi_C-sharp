@@ -8,6 +8,6 @@ namespace ApplicationAnimal.Services.Caching
     {
         public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken);
         public Task SetAsync<T>(string key, T data, CancellationToken cancellationToken, int absoluteTTL = 3, int slidingTTL = 1);
-        public Task RemoveDataAsync(string key);
+        public Task RemoveAsync(string key, CancellationToken cancellationToken);
     }
 }

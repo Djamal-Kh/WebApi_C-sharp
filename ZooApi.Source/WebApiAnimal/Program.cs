@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Shared.Common.Abstractions.Employees;
-using WebApiAnimal.Filters;
 using ZooApi.DTO;
 using ZooApi.Mapping;
 using ZooApi.Middlewares;
@@ -41,9 +40,7 @@ builder.WebHost.UseUrls("http://0.0.0.0:8080");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(AnimalProfile));
-builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<DecrementAnimalEnergyAsync>();
-builder.Services.AddScoped<CacheAttributeForHttpGet>();
 
 var webApiAssembly = typeof(AddAnimalRequestDto).Assembly;
 var applicationAssembly = typeof(CreateEmployeeHandler).Assembly;
@@ -108,6 +105,7 @@ var redisConnectionString = builder.Services.AddStackExchangeRedisCache(options 
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "ZooApi_";
 });
+builder.Services.AddHybridCache();
 
 if (dbContext is null || redisConnectionString is null)
 {

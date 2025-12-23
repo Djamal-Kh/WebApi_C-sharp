@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Shared.Common.Abstractions.Employees;
 using Shared.Common.ResultPattern;
 using Shared.Common.Extensions;
+using DomainAnimal;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee
 {
@@ -13,11 +15,17 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<CreateEmployeeHandler> _logger;
         private readonly IValidator<CreateEmployeeCommand> _validator;
-        public CreateEmployeeHandler(IEmployeeRepository employeeRepository, ILogger<CreateEmployeeHandler> logger, IValidator<CreateEmployeeCommand> validator)
+        private readonly HybridCache _cache;
+
+        public CreateEmployeeHandler(IEmployeeRepository employeeRepository, 
+            ILogger<CreateEmployeeHandler> logger, 
+            IValidator<CreateEmployeeCommand> validator,
+            HybridCache cache)
         {
             _employeeRepository = employeeRepository;
             _logger = logger;
             _validator = validator;
+            _cache = cache;
         }
 
         public async Task<Result<int, Errors>> Handle(CreateEmployeeCommand command, CancellationToken cancellationToken)
@@ -65,7 +73,19 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmpl
                 return GeneralErrors.ValueIsInvalid().ToErrors();
             }
                 
+            // инвалидация кэша 
+            var tags = new List<string> 
+            {
+                EmployeeConstants.EMPLOYEE_CACHE_TAG,
+                EmployeeConstants.EMPLOYEES_BY_POSITION_CACHE_TAG + position,
+                EmployeeConstants.EMPLOYEES_WITHOUT_ANIMALS
+            };
+
+            await _cache.RemoveByTagAsync(tags, cancellationToken);
+
+            // Возврат успешного результата
             _logger.LogInformation("Successfully created employee with ID: {Id}", saveEmployee.Value);
+
             return saveEmployee.Value;
         }
     }

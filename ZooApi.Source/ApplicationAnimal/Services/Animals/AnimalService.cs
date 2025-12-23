@@ -1,9 +1,15 @@
 ﻿using ApplicationAnimal.Common.DTO;
+using ApplicationAnimal.Services.Caching;
+using AutoMapper;
 using CSharpFunctionalExtensions;
+using DomainAnimal;
 using DomainAnimal.Entities;
 using DomainAnimal.Factories;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using Shared.Common.ResultPattern;
+using ZooApi.DTO;
 
 namespace ApplicationAnimal.Services.Animals
 {
@@ -12,14 +18,21 @@ namespace ApplicationAnimal.Services.Animals
     {
         private readonly ILogger<AnimalService> _logger;
         private readonly IAnimalRepository _animalRepository;
+        private readonly HybridCache _cache;
+        private readonly IMapper _mapper;
 
-        public AnimalService(IAnimalRepository animalRepository, ILogger<AnimalService> logger)
+        public AnimalService(IAnimalRepository animalRepository, 
+            ILogger<AnimalService> logger,
+            HybridCache cache,
+            IMapper mapper)
         {
             _logger = logger;
             _animalRepository = animalRepository;
+            _cache = cache;
+            _mapper = mapper;
         }
 
-        public async Task<Result<Animal, Errors>> AddAnimalAsync(string type, string name, CancellationToken cancellationToken = default)
+        public async Task<Result<AnimalResponseDto, Errors>> AddAnimalAsync(string type, string name, CancellationToken cancellationToken = default)
         {
             bool isDuplicateName = await _animalRepository.isDuplicateNameAsync(name, cancellationToken);
 
@@ -36,13 +49,46 @@ namespace ApplicationAnimal.Services.Animals
 
             await _animalRepository.AddAnimalAsync(newAnimal, cancellationToken);
 
-            return newAnimal;
+            var tags = new List<string> { AnimalConstants.ANIMAL_CACHE_TAG };
+
+            await _cache.RemoveByTagAsync(tags, cancellationToken);
+
+            var newAnimalResponse =  _mapper.Map<AnimalResponseDto>(newAnimal);
+
+            return newAnimalResponse;
         }
 
-        public async Task<Result<List<Animal>, Errors>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
+        public async Task<Result<List<AnimalResponseDto>, Errors>> GetAllAnimalsAsync(CancellationToken cancellationToken = default)
         {
-            var animals = await _animalRepository.GetAllAnimalsAsync(cancellationToken);
+            string cacheKey = "animal:all_animals";
 
+            var options = new HybridCacheEntryOptions
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(1),
+                Expiration = TimeSpan.FromMinutes(2)
+            };
+
+            var tags = new List<string> 
+            { 
+                AnimalConstants.ANIMAL_CACHE_TAG, 
+                AnimalConstants.ANIMAL_COUNT_PREFIX 
+            };
+
+            var animals = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancel =>
+                {
+                    _logger.LogInformation("Cache miss for key {CacheKey}. Retrieving from database.", cacheKey);
+
+                    var animals = await _animalRepository.GetAllAnimalsAsync(cancel);
+                    var animalsDto = _mapper.Map<List<AnimalResponseDto>>(animals);
+                    return animalsDto;
+                },
+                options,
+                tags,
+                cancellationToken: cancellationToken
+            );
+            
             if (!animals.Any())
                 return GeneralErrors.CollectionEmpty().ToErrors();
 
@@ -51,7 +97,28 @@ namespace ApplicationAnimal.Services.Animals
 
         public async Task<Result<List<EnumAnimalTypeCountDto>, Errors>> GetNumberAnimalsByType(CancellationToken cancellationToken = default)
         {
-            var animalsByType = await _animalRepository.GetNumberAnimalsByType(cancellationToken);
+            string cacheKey = "animal:animals_by_type";
+
+            var options = new HybridCacheEntryOptions
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(1),
+                Expiration = TimeSpan.FromMinutes(2)
+            };
+
+            var tags = new List<string> { AnimalConstants.ANIMAL_COUNT_PREFIX };
+
+            var animalsByType = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancel =>
+                {
+                    _logger.LogInformation("Cache miss for key {CacheKey}. Retrieving from database.", cacheKey);
+
+                    return await _animalRepository.GetNumberAnimalsByType(cancel);
+                },
+                options,
+                tags,
+                cancellationToken: cancellationToken
+            );
 
             if (!animalsByType.Any())
             {
@@ -61,9 +128,36 @@ namespace ApplicationAnimal.Services.Animals
             return animalsByType;
         }
 
-        public async Task<Result<List<Animal>, Errors>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
+        public async Task<Result<List<AnimalResponseDto>, Errors>> GetOwnerlessAnimals(CancellationToken cancellationToken = default)
         {
-            var ownerlessAnimals = await _animalRepository.GetOwnerlessAnimals(cancellationToken);
+            string cacheKey = "animal:ownerless_animals";
+
+            var options = new HybridCacheEntryOptions
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(1),
+                Expiration = TimeSpan.FromMinutes(2)
+            };
+
+            var tags = new List<string> 
+            { 
+                AnimalConstants.ANIMAL_CACHE_TAG, 
+                AnimalConstants.ANIMAL_OWNERLESS_CACHE_TAG 
+            };
+
+            var ownerlessAnimals = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancel =>
+                {
+                    _logger.LogInformation("Cache miss for key {CacheKey}. Retrieving from database.", cacheKey);
+
+                    var animals = await _animalRepository.GetOwnerlessAnimals(cancel);
+                    var animalsDto = _mapper.Map<List<AnimalResponseDto>>(animals);
+                    return animalsDto;
+                },
+                options,
+                tags,
+                cancellationToken: cancellationToken
+            );
 
             if (!ownerlessAnimals.Any())
             {
@@ -73,9 +167,36 @@ namespace ApplicationAnimal.Services.Animals
             return ownerlessAnimals;
         }
 
-        public async Task<Result<Animal, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<AnimalResponseDto, Errors>> GetAnimalByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var animal = await _animalRepository.GetAnimalByIdAsync(id, cancellationToken);
+            string cacheKey = $"animal:id:{id}";
+
+            var options = new HybridCacheEntryOptions
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(1),
+                Expiration = TimeSpan.FromMinutes(2)
+            };
+
+            var tags = new List<string> 
+            { 
+                AnimalConstants.ANIMAL_BY_ID_CACHE_TAG + id,
+                AnimalConstants.ALL_ANIMALS_BY_ID_CACHE_TAG
+            };
+
+            var animal = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancel =>
+                {
+                    _logger.LogInformation("Cache miss for key {CacheKey}. Retrieving from database.", cacheKey);
+
+                    var animal = await _animalRepository.GetAnimalByIdAsync(id, cancel);
+                    var animalDto = _mapper.Map<AnimalResponseDto>(animal);
+                    return animalDto;
+                },
+                options,
+                tags,
+                cancellationToken: cancellationToken
+            );
 
             if (animal is null)
             {
@@ -92,6 +213,14 @@ namespace ApplicationAnimal.Services.Animals
             if (feedingResult.IsFailure) 
                 return GeneralErrors.NotFound(id).ToErrors();
 
+            var tags = new List<string> 
+            { 
+                AnimalConstants.ANIMAL_CACHE_TAG, 
+                AnimalConstants.ANIMAL_BY_ID_CACHE_TAG + id 
+            };
+
+            await _cache.RemoveByTagAsync(tags, cancellationToken);
+
             return feedingResult;
         }
 
@@ -105,6 +234,17 @@ namespace ApplicationAnimal.Services.Animals
             }
 
             await _animalRepository.DeleteAnimalAsync(animal, cancellationToken);
+
+            var tags = new List<string> 
+            { 
+                EmployeeConstants.EMPLOYEE_CACHE_TAG, 
+                EmployeeConstants.EMPLOYEE_BY_ID_CACHE_TAG + animal.EmployeeId, 
+                AnimalConstants.ANIMAL_CACHE_TAG, 
+                AnimalConstants.ANIMAL_BY_ID_CACHE_TAG+id, 
+                AnimalConstants.ANIMAL_COUNT_PREFIX 
+            };
+
+            await _cache.RemoveByTagAsync(tags, cancellationToken);
 
             return $"The animal with {id} was removed";
         }
@@ -129,6 +269,16 @@ namespace ApplicationAnimal.Services.Animals
             {
                 return GeneralErrors.Failure("Failed to unbind employee from animal").ToErrors();
             }
+
+            var tags = new List<string> 
+            { 
+                EmployeeConstants.EMPLOYEE_CACHE_TAG, 
+                EmployeeConstants.EMPLOYEE_BY_ID_CACHE_TAG + animal.EmployeeId,
+                AnimalConstants.ANIMAL_CACHE_TAG,
+                AnimalConstants.ANIMAL_BY_ID_CACHE_TAG + id
+            };
+            
+            await _cache.RemoveByTagAsync(tags, cancellationToken);
 
             return $"The employee was unbound from animal with id {id}";
         }

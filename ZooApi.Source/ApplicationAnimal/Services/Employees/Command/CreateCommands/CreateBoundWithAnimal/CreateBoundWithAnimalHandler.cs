@@ -6,6 +6,8 @@ using Shared.Common.ResultPattern;
 using Shared.Common.Extensions;
 using ApplicationAnimal.Services.Animals;
 using DomainAnimal.Entities;
+using DomainAnimal;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoundWithAnimal
 {
@@ -15,13 +17,19 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
         private readonly IAnimalRepository _animalRepository;
         private readonly ILogger<CreateBoundWithAnimalHandler> _logger;
         private readonly IValidator<CreateBoundWithAnimalCommand> _validator;
+        private readonly HybridCache _cache;
 
-        public CreateBoundWithAnimalHandler(IEmployeeRepository employeeRepository, IAnimalRepository animalRepository, ILogger<CreateBoundWithAnimalHandler> logger, IValidator<CreateBoundWithAnimalCommand> validator)
+        public CreateBoundWithAnimalHandler(IEmployeeRepository employeeRepository, 
+            IAnimalRepository animalRepository, 
+            ILogger<CreateBoundWithAnimalHandler> logger, 
+            IValidator<CreateBoundWithAnimalCommand> validator,
+            HybridCache cache)
         {
             _employeeRepository = employeeRepository;
             _animalRepository = animalRepository;
             _logger = logger;
             _validator = validator;
+            _cache = cache;
         }
 
         public async Task<Result<string, Errors>> Handle(CreateBoundWithAnimalCommand command, CancellationToken cancellationToken)
@@ -75,6 +83,20 @@ namespace ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateBoun
             _logger.LogInformation("Successfully assigned Animal with Id {AnimalId} to Employee with Id {EmployeeId}",
                         command.animalId, command.employeeId);
 
+            // инвалидация кэша 
+            var tags = new List<string> 
+            {
+                AnimalConstants.ANIMAL_CACHE_TAG,
+                AnimalConstants.ANIMAL_BY_ID_CACHE_TAG + command.animalId,
+                AnimalConstants.ANIMAL_OWNERLESS_CACHE_TAG,
+                EmployeeConstants.EMPLOYEE_CACHE_TAG,
+                EmployeeConstants.EMPLOYEE_BY_ID_CACHE_TAG + command.employeeId,
+                EmployeeConstants.EMPLOYEES_WITHOUT_ANIMALS,
+            };
+            
+            await _cache.RemoveByTagAsync(tags, cancellationToken);
+
+            // возврат успешного результата
             return $"Employee с id {command.employeeId} successfully attached to animal with id {command.animalId}";
         }
     }

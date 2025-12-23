@@ -2,6 +2,8 @@
 using ApplicationAnimal.Common.DTO;
 using ApplicationAnimal.Services.Caching;
 using Dapper;
+using DomainAnimal;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,11 +16,11 @@ namespace ApplicationAnimal.Services.Employees.Queries
     public sealed class GetEmployeesWithoutAnimalsHandler
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly IRedisCacheService _cache;
+        private readonly HybridCache _cache;
         private readonly ILogger<GetEmployeesWithoutAnimalsHandler> _logger;
 
         public GetEmployeesWithoutAnimalsHandler(IDbConnectionFactory connectionFactory,
-            IRedisCacheService cache,
+            HybridCache cache,
             ILogger<GetEmployeesWithoutAnimalsHandler> logger)
         {
             _connectionFactory = connectionFactory;
@@ -28,37 +30,51 @@ namespace ApplicationAnimal.Services.Employees.Queries
 
         public async Task<GetEmployeesDto> Handle(CancellationToken cancellationToken)
         {
-            var employeesFromCache = await _cache.GetAsync<List<EmployeeDto>>("employees_without_animals", cancellationToken);
+            string cacheKey = "employee:employees_without_animals";
 
-            if (employeesFromCache is not null)
+            var tags = new List<string>
             {
-                _logger.LogInformation("Employees without animals retrieved from cache.");
-                return new GetEmployeesDto(employeesFromCache);
-            }
+                EmployeeConstants.EMPLOYEE_CACHE_TAG,
+                EmployeeConstants.EMPLOYEES_WITHOUT_ANIMALS 
+            };
 
-            var connection = await _connectionFactory.CreateConnectionAsync(cancellationToken);
-
-            const string sql =
-                """
-                SELECT e.id,
-                    e.name,
-                    e.position,
-                    e.animal_limit
-                FROM employees e
-                LEFT JOIN animals a ON e.id = a.employee_id
-                Where a.employee_id IS NULL
-                ORDER BY e.name
-                """;
-
-            var employees = await connection.QueryAsync<EmployeeDto>(sql);
-
-            if (employees is not null)
+            var options = new HybridCacheEntryOptions
             {
-                _logger.LogInformation("Employees without animals added in cache");
-                await _cache.SetAsync("employees_without_animals", employees.ToList(), cancellationToken);
-            }    
+                LocalCacheExpiration = TimeSpan.FromMinutes(1),
+                Expiration = TimeSpan.FromMinutes(3)
+            };
 
-            return new GetEmployeesDto(employees.ToList());
+            var employees = await _cache.GetOrCreateAsync(
+                cacheKey,
+                async cancel =>
+                {
+                    _logger.LogInformation("Cache miss for key {CacheKey}", cacheKey);
+
+                    var connection = await _connectionFactory.CreateConnectionAsync(cancel);
+                    const string sql =
+                        """
+                        SELECT e.id,
+                            e.name,
+                            e.position,
+                            e.animal_limit
+                        FROM employees e
+                        LEFT JOIN animals a ON e.id = a.employee_id
+                        WHERE a.employee_id IS NULL
+                        ORDER BY e.name
+                        """;
+
+                    var employees = await connection.QueryAsync<EmployeeDto>(sql);
+
+                    _logger.LogInformation("Employees without animals retrieved from database and added to cache.");
+
+                    return employees.ToList();
+                },
+                options,
+                tags,
+                cancellationToken: cancellationToken
+            );
+
+            return new GetEmployeesDto(employees);
         }
     }
 }

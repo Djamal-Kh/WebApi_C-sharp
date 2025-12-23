@@ -1,5 +1,6 @@
 ﻿using DomainAnimal.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace DomainAnimal.Entities
 {

@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DomainAnimal;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmployee
 {
@@ -19,12 +21,17 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<DemoteEmployeeHandler> _logger;
         private readonly IValidator<DemoteEmployeeCommand> _validator;
+        private readonly HybridCache _cache;
 
-        public DemoteEmployeeHandler(IEmployeeRepository employeeRepository, ILogger<DemoteEmployeeHandler> logger, IValidator<DemoteEmployeeCommand> validator)
+        public DemoteEmployeeHandler(IEmployeeRepository employeeRepository, 
+            ILogger<DemoteEmployeeHandler> logger, 
+            IValidator<DemoteEmployeeCommand> validator,
+            HybridCache cache)
         {
             _employeeRepository = employeeRepository;
             _logger = logger;
             _validator = validator;
+            _cache = cache;
         }
 
         public async Task<Result<EnumEmployeePosition, Errors>> Handle(DemoteEmployeeCommand command, CancellationToken cancellationToken)
@@ -52,6 +59,8 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
                 return GeneralErrors.NotFound().ToErrors();
             }
 
+            var oldPosition = employee.Position;
+
             // понижение сотрудника
             var result = await _employeeRepository.DemotionEmployeeAsync(employee, cancellationToken);
 
@@ -63,7 +72,22 @@ namespace ApplicationAnimal.Services.Employees.Command.UpdateCommands.DemoteEmpl
                 return GeneralErrors.Failure("Ошибка при понижении сотрудника").ToErrors();
             }
 
+            // инвалидация кэша
+            var newPosition = employee.Position;
+
+            var tags = new List<string> 
+            { 
+                EmployeeConstants.EMPLOYEE_CACHE_TAG,
+                EmployeeConstants.EMPLOYEE_BY_ID_CACHE_TAG + employee.Id,
+                EmployeeConstants.EMPLOYEES_BY_POSITION_CACHE_TAG + oldPosition,
+                EmployeeConstants.EMPLOYEES_BY_POSITION_CACHE_TAG + newPosition,
+            };
+
+            await _cache.RemoveByTagAsync(tags, cancellationToken);
+
+            // успешное понижение
             _logger.LogInformation("Successfully demoted Employee with Id {EmployeeId}", employee.Id);
+
             return employee.Position;
         }
     }
