@@ -282,5 +282,21 @@ namespace ApplicationAnimal.Services.Animals
 
             return $"The employee was unbound from animal with id {id}";
         }
+
+        public async Task<UnitResult<Errors>> DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await _animalRepository.DecrementAnimalEnergyAsync(decrementValue, cancellationToken);
+
+                return UnitResult.Success<Errors>();
+            }
+            catch
+            {
+                _logger.LogError("Error occurred while decrementing animal energy by {DecrementValue}", decrementValue);
+
+                return GeneralErrors.Failure("Failed to decrement animal energy").ToErrors();
+            }
+        }
     }
 }

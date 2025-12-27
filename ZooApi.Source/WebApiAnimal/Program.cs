@@ -1,4 +1,3 @@
-using ApplicationAnimal.BackgroundServ;
 using ApplicationAnimal.Common.Abstractions;
 using ApplicationAnimal.Services.Employees.Command.CreateCommands.CreateEmployee;
 using FluentValidation;
@@ -15,6 +14,7 @@ using ZooApi.Middlewares;
 using ZooApi.Validations;
 using ApplicationAnimal.Services.Employees.Queries;
 using ApplicationAnimal.Services.Caching;
+using Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -105,6 +105,7 @@ var redisConnectionString = builder.Services.AddStackExchangeRedisCache(options 
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
     options.InstanceName = "ZooApi_";
 });
+
 builder.Services.AddHybridCache();
 
 if (dbContext is null || redisConnectionString is null)

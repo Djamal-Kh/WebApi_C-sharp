@@ -2,8 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace ApplicationAnimal.BackgroundServ
+namespace Infrastructure.BackgroundServices
 {
     public class DecrementAnimalEnergyAsync : BackgroundService
     {
@@ -30,11 +33,11 @@ namespace ApplicationAnimal.BackgroundServ
                 await Task.Delay(delayTimeMS, stoppingToken);
 
                 // При каждом вызове DecrementAnimalEnergyAsync (Singleton) создается новая область IAnimalRepository (Scoped) для того чтобы Singleton не хранил в себе постоянно один и тот же Scoped
-                using (var scope = _scopeFactory.CreateScope()) 
+                using (var scope = _scopeFactory.CreateScope())
                 {
-                    var scopeOfAnimalRepository = scope.ServiceProvider.GetRequiredService<IAnimalRepository>();
+                    var scopeOfAnimalService = scope.ServiceProvider.GetRequiredService<IAnimalService>();
                     _logger.LogInformation("Reduction of animal energy by value {decrementValue}", decrementValue);
-                    await scopeOfAnimalRepository.DecrementAnimalEnergyAsync(decrementValue);
+                    await scopeOfAnimalService.DecrementAnimalEnergyAsync(decrementValue, stoppingToken);
                 }
             }
         }

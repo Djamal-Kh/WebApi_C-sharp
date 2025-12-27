@@ -16,6 +16,6 @@ namespace ApplicationAnimal.Services.Animals
         Task<Result<string, Errors>> FeedAnimalAsync(int id, CancellationToken cancellationToken=default);
         Task<Result<string, Errors>> DeleteAnimalAsync(int id, CancellationToken cancellationToken = default);
         Task<Result<string, Errors>> RemoveBoundAnimalAsync(int id, CancellationToken cancellationToken = default);
-
+        Task<UnitResult<Errors>> DecrementAnimalEnergyAsync(int decrementValue, CancellationToken cancellationToken = default);
     }
 }
