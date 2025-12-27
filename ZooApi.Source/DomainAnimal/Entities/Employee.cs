@@ -15,18 +15,20 @@ namespace DomainAnimal.Entities
         public string Name { get; private set; }
         public EnumEmployeePosition Position { get; private set; }
         public int Limit { get; private set; }
+        public int Balance { get; private set; } 
         public ICollection<Animal> Animals { get; private set; }
 
         // конструктор без параметров для EF Core
         protected Employee() { }
-        public Employee(string name, EnumEmployeePosition position)
+        public Employee(string name, EnumEmployeePosition position, int balance = 0)
         {
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name) || balance < 0)
                 throw new ArgumentNullException();
 
             Name = name;
             Position = position;
             Limit = GetLimitForPosition(position);
+            Balance = balance;
         }
 
 

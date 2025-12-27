@@ -55,7 +55,8 @@ namespace ApplicationAnimal.Services.Employees.Queries
                         SELECT id,
                             name,
                             position,
-                            animal_limit
+                            animal_limit,
+                            balance
                         FROM employees
                         Where position = @EmployeePosition
                         """;

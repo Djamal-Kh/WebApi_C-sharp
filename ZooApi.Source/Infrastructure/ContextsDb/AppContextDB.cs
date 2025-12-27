@@ -86,6 +86,11 @@ namespace Infrastructure.ContextsDb
                 .Entity<Employee>()
                 .Property(x => x.Limit)
                 .HasColumnName("animal_limit");
+
+            modelBuilder
+                .Entity<Employee>()
+                .Property(x => x.Balance)
+                .HasColumnName("balance");
         }
     }
 }

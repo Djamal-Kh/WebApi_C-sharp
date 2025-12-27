@@ -56,7 +56,8 @@ namespace ApplicationAnimal.Services.Employees.Queries
                         SELECT e.id,
                             e.name,
                             e.position,
-                            e.animal_limit
+                            e.animal_limit,
+                            e.balance
                         FROM employees e
                         LEFT JOIN animals a ON e.id = a.employee_id
                         WHERE a.employee_id IS NULL
