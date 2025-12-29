@@ -15,7 +15,7 @@ namespace DomainAnimal.Entities
         public string Name { get; private set; }
         public EnumEmployeePosition Position { get; private set; }
         public int Limit { get; private set; }
-        public int Balance { get; private set; } 
+        public int Balance { get; private set; }
         public ICollection<Animal> Animals { get; private set; }
 
         // конструктор без параметров для EF Core
@@ -65,9 +65,9 @@ namespace DomainAnimal.Entities
             Limit = GetLimitForPosition(Position);
             return UnitResult.Success<Error>();
         }
-    
 
-    public UnitResult<Error> AssignAnimal(Animal animal)
+
+        public UnitResult<Error> AssignAnimal(Animal animal)
         {
             if (Animals.Count >= Limit)
                 return GeneralErrors.ValueIsInvalid($"Превышен лимит ({Limit}) животных для данного сотрудника");
@@ -83,7 +83,21 @@ namespace DomainAnimal.Entities
             Animals.Add(animal);
             return UnitResult.Success<Error>();
         }
+
+
+        public static int CalculateSalary(EnumEmployeePosition position)
+        {
+            return position switch
+            {
+                EnumEmployeePosition.Traine => 30,
+                EnumEmployeePosition.Junior => 50,
+                EnumEmployeePosition.Middle => 100,
+                EnumEmployeePosition.Senior => 250,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
     }
+
     public enum EnumEmployeePosition
     {
         Traine = 1,

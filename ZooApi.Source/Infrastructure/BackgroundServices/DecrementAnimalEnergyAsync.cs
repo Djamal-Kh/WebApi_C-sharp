@@ -14,7 +14,8 @@ namespace Infrastructure.BackgroundServices
         private readonly ILogger<DecrementAnimalEnergyAsync> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public DecrementAnimalEnergyAsync(IServiceScopeFactory scopeFactory, ILogger<DecrementAnimalEnergyAsync> logger)
+        public DecrementAnimalEnergyAsync(IServiceScopeFactory scopeFactory, 
+            ILogger<DecrementAnimalEnergyAsync> logger)
         {
             _scopeFactory = scopeFactory;
             _logger = logger;

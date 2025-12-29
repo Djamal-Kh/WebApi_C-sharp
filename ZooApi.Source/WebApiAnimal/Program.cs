@@ -15,6 +15,7 @@ using ZooApi.Validations;
 using ApplicationAnimal.Services.Employees.Queries;
 using ApplicationAnimal.Services.Caching;
 using Infrastructure.BackgroundServices;
+using ApplicationAnimal.Services.Employees.Command.UpdateCommands.PaySalariesEmployee;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -41,6 +42,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(AnimalProfile));
 builder.Services.AddHostedService<DecrementAnimalEnergyAsync>();
+builder.Services.AddHostedService<SalaryPaymentForEmployee>();
 
 var webApiAssembly = typeof(AddAnimalRequestDto).Assembly;
 var applicationAssembly = typeof(CreateEmployeeHandler).Assembly;
@@ -53,6 +55,7 @@ builder.Services.AddScoped<GetEmployeesByPositionsHandler>();
 builder.Services.AddScoped<GetEmployeesHandler>(); 
 builder.Services.AddScoped<GetEmployeesWithoutAnimalsHandler>();
 builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
+builder.Services.AddScoped<PaySalariesEmployeeHandler>();
 
 // Использование Scrutor для регистрации Application (РАСПИШИ В OBSIDIAN !) 
 builder.Services.Scan(selector => selector

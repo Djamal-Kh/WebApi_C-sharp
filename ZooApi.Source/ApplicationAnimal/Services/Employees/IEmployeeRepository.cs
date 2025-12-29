@@ -15,6 +15,8 @@ namespace ApplicationAnimal.Services.Employees
         Task<UnitResult<Error>> FireEmployeeAsync(int id, CancellationToken cancellationToken);
         Task<Employee?> GetByIdAsync(int employeeId, CancellationToken cancellationToken);  
         Task<Employee?> GetByIdWithAnimalsAsync(int empId, CancellationToken cancellationToken);
+        Task<IEnumerable<Employee?>> GetAllEmployeesAsync(CancellationToken cancellationToken);
         Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default);
+        Task PaySalariesAsync(EnumEmployeePosition employeePosition, int salary, CancellationToken cancellationToken);
     }
 }

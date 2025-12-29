@@ -121,10 +121,26 @@ namespace Infrastructure.Repositories
             return employee;
         }
 
+        public async Task<IEnumerable<Employee?>> GetAllEmployeesAsync(CancellationToken cancellationToken)
+        {
+            return await context.Employees
+                .AsNoTracking()
+                .OrderBy(a => a.Id)
+                .ToListAsync();
+        }
+
         public async Task<bool> isDuplicateNameAsync(string name, CancellationToken cancellationToken = default)
         {
             bool exist = await context.Employees.AnyAsync(n => n.Name == name);
             return exist;
+        }
+
+        public async Task PaySalariesAsync(EnumEmployeePosition employeePosition, int salary, CancellationToken cancellationToken)
+        {
+            await context.Employees
+                .Where(e => e.Position == employeePosition)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(e => e.Balance, e => e.Balance + salary));
         }
     }
 }
